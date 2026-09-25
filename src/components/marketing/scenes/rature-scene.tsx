@@ -122,10 +122,10 @@ export function RatureScene({ variant = 'desktop', playing, className, onLoop }:
               {AFTER}
               <span
                 data-bubble
-                className="absolute -top-11 left-8 z-20 flex items-center gap-0.5 rounded-xl border border-border bg-surface p-1 font-sans shadow-lift"
+                className="absolute -top-11 left-0 z-20 flex items-center gap-0.5 rounded-xl border border-border bg-surface p-1 font-sans shadow-lift"
               >
                 {[Bold, Italic, Heading2, Quote].map((Icon, i) => (
-                  <span key={i} className="grid size-7 place-items-center rounded-lg text-muted">
+                  <span key={i} className={cn('grid size-7 place-items-center rounded-lg text-muted', i > 1 && '@max-md:hidden')}>
                     <Icon className="size-3.5" />
                   </span>
                 ))}
