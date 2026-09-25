@@ -63,9 +63,9 @@ export function DictationDock({ state, maxSeconds, onStart, onStop, onPause, onR
           <span className={cn('w-12 font-mono text-sm tabular-nums', remaining < 30 && 'text-danger')} aria-live="off">
             {formatDuration(state.elapsed)}
           </span>
-          <Waveform level={state.level} active={phase === 'listening'} bars={18} className="hidden text-ember sm:flex" />
+          <Waveform level={state.level} active={phase === 'listening'} bars={18} className="hidden text-ember @md:flex" />
           {state.engine && (
-            <span className="hidden rounded-full bg-surface-2 px-2 py-0.5 text-[10.5px] font-medium text-muted md:inline">
+            <span className="hidden rounded-full bg-surface-2 px-2 py-0.5 text-[10.5px] font-medium text-muted @xl:inline">
               {ENGINE_LABEL[state.engine]}
             </span>
           )}

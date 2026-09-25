@@ -36,7 +36,12 @@ export function ProseView({ blocks, className, indent, highlights = [], onNoteCl
         const content = renderRuns(b.runs, highlights, onNoteClick, onHighlightClick);
         if (b.type === 'h2') return <h2 key={i}>{content}</h2>;
         if (b.type === 'h3') return <h3 key={i}>{content}</h3>;
-        if (b.type === 'quote') return <blockquote key={i}><p>{content}</p></blockquote>;
+        if (b.type === 'quote')
+          return (
+            <blockquote key={i}>
+              <p>{content}</p>
+            </blockquote>
+          );
         return <p key={i}>{content}</p>;
       })}
     </div>

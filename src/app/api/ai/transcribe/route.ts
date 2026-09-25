@@ -47,9 +47,7 @@ export async function POST(req: Request) {
       temperature: 0.1,
       maxOutputTokens: 8192,
       parts: [
-        ...(fields.data.context
-          ? [{ text: `Fin du texte précédent, pour la cohérence :\n${wrapManuscript(fields.data.context)}` }]
-          : []),
+        ...(fields.data.context ? [{ text: `Fin du texte précédent, pour la cohérence :\n${wrapManuscript(fields.data.context)}` }] : []),
         { inlineData: { mimeType, data: Buffer.from(bytes).toString('base64') } },
       ],
     });

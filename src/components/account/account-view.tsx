@@ -39,7 +39,9 @@ export function AccountView() {
     try {
       const { json, markdown } = await collectUserData(user.uid);
       const files: Record<string, Uint8Array> = {
-        'atelier-donnees.json': strToU8(JSON.stringify({ account: { uid: user.uid, email: user.email, createdAt: user.metadata.creationTime }, ...json }, null, 2)),
+        'atelier-donnees.json': strToU8(
+          JSON.stringify({ account: { uid: user.uid, email: user.email, createdAt: user.metadata.creationTime }, ...json }, null, 2),
+        ),
         'LISEZMOI.txt': strToU8(
           'Export complet de vos données Atelier (RGPD, art. 20).\n\n- atelier-donnees.json : profil, manuscrits, chapitres, notes, versions et statistiques.\n- manuscrits/ : chaque manuscrit en Markdown.\n',
         ),
@@ -81,12 +83,15 @@ export function AccountView() {
       <main className="container-page max-w-3xl pt-10">
         <h1 className="font-display text-5xl">Compte</h1>
         <p className="mt-2 text-sm text-muted">
-          {user.isAnonymous ? 'Compte d’essai' : user.email} · membre depuis {user.metadata.creationTime ? formatRelative(new Date(user.metadata.creationTime).getTime()) : '—'}
+          {user.isAnonymous ? 'Compte d’essai' : user.email} · membre depuis{' '}
+          {user.metadata.creationTime ? formatRelative(new Date(user.metadata.creationTime).getTime()) : '—'}
         </p>
 
         {user.isAnonymous && (
           <Card title="Garder vos textes" icon={<UserRound />}>
-            <p className="text-sm text-muted">Votre essai est lié à ce navigateur. Associez-le à un compte pour retrouver vos manuscrits partout.</p>
+            <p className="text-sm text-muted">
+              Votre essai est lié à ce navigateur. Associez-le à un compte pour retrouver vos manuscrits partout.
+            </p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button variant="secondary" onClick={() => signInWithGoogle().catch((e) => toast.error(describeAuthError(e)))}>
                 <GoogleIcon /> Continuer avec Google
@@ -132,7 +137,12 @@ export function AccountView() {
                     const f = e.target.files?.[0];
                     if (!f) return;
                     try {
-                      const data = await compressImage(await fileToDataUrl(f), { maxWidth: 160, maxHeight: 160, maxBytes: 40_000, cover: true });
+                      const data = await compressImage(await fileToDataUrl(f), {
+                        maxWidth: 160,
+                        maxHeight: 160,
+                        maxBytes: 40_000,
+                        cover: true,
+                      });
                       await saveProfile({ avatarUrl: data });
                     } catch {
                       toast.error('Image illisible.');
@@ -194,7 +204,10 @@ export function AccountView() {
                   type="button"
                   onClick={() => void saveProfile({ dictationEngine: id })}
                   aria-pressed={profile.dictationEngine === id}
-                  className={cn('rounded-xl border border-border p-3 text-left transition', profile.dictationEngine === id && 'border-ember bg-ember-soft/40')}
+                  className={cn(
+                    'rounded-xl border border-border p-3 text-left transition',
+                    profile.dictationEngine === id && 'border-ember bg-ember-soft/40',
+                  )}
                 >
                   <span className="block text-sm font-medium">{label}</span>
                   <span className="block text-xs text-muted">{hint}</span>
@@ -235,14 +248,22 @@ export function AccountView() {
               <KeyRound className="size-3.5" /> Clé Gemini personnelle (facultatif)
             </Label>
             <div className="flex gap-2">
-              <Input id="byok" type="password" autoComplete="off" value={key} onChange={(e) => setKey(e.target.value)} placeholder="AIza…" className="font-mono" />
+              <Input
+                id="byok"
+                type="password"
+                autoComplete="off"
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+                placeholder="AIza…"
+                className="font-mono"
+              />
               <Button type="submit" variant="secondary">
                 {key ? 'Enregistrer' : 'Retirer'}
               </Button>
             </div>
             <p className="mt-1.5 text-xs text-faint">
-              Stockée uniquement dans ce navigateur, transmise à notre serveur à chaque requête sans être conservée. Utile pour lever le quota du
-              service.
+              Stockée uniquement dans ce navigateur, transmise à notre serveur à chaque requête sans être conservée. Utile pour lever le
+              quota du service.
             </p>
           </form>
         </Card>
@@ -277,8 +298,8 @@ export function AccountView() {
 
         <Card title="Supprimer mon compte" icon={<ShieldAlert />} tone="danger">
           <p className="text-sm text-muted">
-            Efface définitivement vos manuscrits, notes, versions, statistiques et votre compte de connexion. Irréversible : exportez vos données
-            avant.
+            Efface définitivement vos manuscrits, notes, versions, statistiques et votre compte de connexion. Irréversible : exportez vos
+            données avant.
           </p>
           <Button className="mt-4" variant="danger" onClick={() => setConfirmDelete(true)}>
             Supprimer mon compte
@@ -291,7 +312,13 @@ export function AccountView() {
           <p className="text-sm">
             Tapez <strong>SUPPRIMER</strong> pour confirmer.
           </p>
-          <Input className="mt-3" value={confirmText} onChange={(e) => setConfirmText(e.target.value)} aria-label="Confirmation" autoComplete="off" />
+          <Input
+            className="mt-3"
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            aria-label="Confirmation"
+            autoComplete="off"
+          />
           <div className="mt-5 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setConfirmDelete(false)} disabled={deleting}>
               Annuler
@@ -306,10 +333,33 @@ export function AccountView() {
   );
 }
 
-function Card({ title, icon, children, tone, id }: { title: string; icon: React.ReactNode; children: React.ReactNode; tone?: 'danger'; id?: string }) {
+function Card({
+  title,
+  icon,
+  children,
+  tone,
+  id,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  tone?: 'danger';
+  id?: string;
+}) {
   return (
-    <section id={id} className={cn('mt-8 scroll-mt-24 rounded-2xl border border-border bg-surface p-5 shadow-soft sm:p-6', tone === 'danger' && 'border-danger/30')}>
-      <h2 className={cn('mb-4 flex items-center gap-2 text-base font-semibold [&>svg]:size-4', tone === 'danger' ? 'text-danger' : 'text-text')}>
+    <section
+      id={id}
+      className={cn(
+        'mt-8 scroll-mt-24 rounded-2xl border border-border bg-surface p-5 shadow-soft sm:p-6',
+        tone === 'danger' && 'border-danger/30',
+      )}
+    >
+      <h2
+        className={cn(
+          'mb-4 flex items-center gap-2 text-base font-semibold [&>svg]:size-4',
+          tone === 'danger' ? 'text-danger' : 'text-text',
+        )}
+      >
         {icon}
         {title}
       </h2>

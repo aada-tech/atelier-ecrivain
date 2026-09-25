@@ -2,27 +2,14 @@
 
 import { useState } from 'react';
 import type { Editor } from '@tiptap/react';
-import { Check, ExternalLink, Mic, ScanSearch, Sparkles, Undo2, X, ChevronDown } from 'lucide-react';
+import { Check, ScanSearch, Sparkles, Undo2, X, ChevronDown } from 'lucide-react';
+import { SuggestionCard, SUGGESTION_KIND as KIND } from '@/components/manuscript/suggestion-card';
 import type { Suggestion } from '@/lib/doc/types';
-import { diffWords } from '@/lib/diff';
 import { Button } from '@/components/ui/button';
-import { Badge, EmptyState } from '@/components/ui/misc';
+import { EmptyState } from '@/components/ui/misc';
 import { cn } from '@/lib/utils';
 import { hasText, replaceInEditor, revealText } from '../editor/commands';
 import { setDecorations } from '../editor/extensions';
-
-const KIND = {
-  style: { label: 'Style', icon: Sparkles, tone: 'iris' as const },
-  fact: { label: 'Fait', icon: ScanSearch, tone: 'sage' as const },
-  dictation: { label: 'Dictée', icon: Mic, tone: 'ember' as const },
-};
-
-const VERDICT = {
-  confirmed: { label: 'Confirmé', tone: 'sage' as const },
-  caution: { label: 'À nuancer', tone: 'amber' as const },
-  error: { label: 'Erreur probable', tone: 'danger' as const },
-  unverified: { label: 'Non vérifié', tone: 'neutral' as const },
-};
 
 interface Props {
   suggestions: Suggestion[];
@@ -40,8 +27,7 @@ export function SuggestionsPanel({ suggestions, editor, onChange, onAnalyzeChapt
   const resolved = suggestions.filter((s) => s.status !== 'pending');
   const visible = filter === 'all' ? pending : pending.filter((s) => s.kind === filter);
 
-  const setStatus = (id: string, status: Suggestion['status']) =>
-    onChange(suggestions.map((s) => (s.id === id ? { ...s, status } : s)));
+  const setStatus = (id: string, status: Suggestion['status']) => onChange(suggestions.map((s) => (s.id === id ? { ...s, status } : s)));
 
   const accept = (s: Suggestion) => {
     if (!editor) return;
@@ -101,7 +87,7 @@ export function SuggestionsPanel({ suggestions, editor, onChange, onAnalyzeChapt
         </div>
       )}
 
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4 scrollbar-thin">
+      <div className="min-h-0 flex-1 scrollbar-thin space-y-3 overflow-y-auto p-4">
         {visible.length === 0 && (
           <EmptyState icon={<Sparkles />} title="Aucune rature en attente" className="py-8">
             Sélectionnez un passage puis « Raturer », ou analysez tout le chapitre. Vos repentirs dictés apparaîtront aussi ici.
@@ -153,102 +139,5 @@ export function SuggestionsPanel({ suggestions, editor, onChange, onAnalyzeChapt
         )}
       </div>
     </div>
-  );
-}
-
-export function SuggestionCard({
-  suggestion: s,
-  found = true,
-  onAccept,
-  onReject,
-  onHover,
-  className,
-}: {
-  suggestion: Suggestion;
-  found?: boolean;
-  onAccept?: () => void;
-  onReject?: () => void;
-  onHover?: (s: Suggestion | null) => void;
-  className?: string;
-}) {
-  const kind = KIND[s.kind];
-  const Icon = kind.icon;
-  const segments = s.replacement ? diffWords(s.original, s.replacement) : null;
-  return (
-    <article
-      className={cn(
-        'group rounded-xl border border-border bg-surface p-3.5 shadow-soft transition hover:border-border-strong',
-        className,
-      )}
-      onMouseEnter={() => onHover?.(s)}
-      onMouseLeave={() => onHover?.(null)}
-      onFocus={() => onHover?.(s)}
-    >
-      <header className="mb-2 flex items-center gap-2">
-        <Badge tone={kind.tone}>
-          <Icon /> {kind.label}
-        </Badge>
-        {s.verdict && <Badge tone={VERDICT[s.verdict].tone}>{VERDICT[s.verdict].label}</Badge>}
-        {!found && <span className="ml-auto text-[11px] text-faint">Passage modifié</span>}
-      </header>
-
-      <p className="font-serif text-[15px] leading-relaxed" data-testid="suggestion-diff">
-        {segments
-          ? segments.map((seg, i) =>
-              seg.type === 'same' ? (
-                <span key={i}>{seg.text}</span>
-              ) : seg.type === 'del' ? (
-                <del key={i} className="rounded-sm bg-danger-soft/70 text-danger decoration-danger/60">
-                  {seg.text}
-                </del>
-              ) : (
-                <ins key={i} className="rounded-sm bg-sage-soft px-0.5 text-sage no-underline">
-                  {seg.text}
-                </ins>
-              ),
-            )
-          : <span className="italic text-muted">« {s.original} »</span>}
-      </p>
-
-      {s.explanation && <p className="mt-2 text-[13px] leading-snug text-muted">{s.explanation}</p>}
-
-      {s.sources && s.sources.length > 0 && (
-        <ul className="mt-2 flex flex-wrap gap-1.5">
-          {s.sources.slice(0, 4).map((src) => (
-            <li key={src.uri}>
-              <a
-                href={src.uri}
-                target="_blank"
-                rel="noopener noreferrer nofollow"
-                className="inline-flex max-w-[180px] items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[11px] text-muted hover:border-border-strong hover:text-text"
-              >
-                <ExternalLink className="size-3 shrink-0" />
-                <span className="truncate">{src.title}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {(onAccept || onReject) && (
-        <footer className="mt-3 flex gap-2">
-          {s.replacement && onAccept && (
-            <Button size="xs" variant="primary" onClick={onAccept} disabled={!found}>
-              <Check className="size-3.5" /> Appliquer
-            </Button>
-          )}
-          {!s.replacement && onAccept && (
-            <Button size="xs" variant="secondary" onClick={onAccept}>
-              <Check className="size-3.5" /> Vu
-            </Button>
-          )}
-          {onReject && (
-            <Button size="xs" variant="ghost" onClick={onReject}>
-              Ignorer
-            </Button>
-          )}
-        </footer>
-      )}
-    </article>
   );
 }

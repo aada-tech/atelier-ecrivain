@@ -26,7 +26,11 @@ export function Waveform({
         return (
           <span
             key={i}
-            className={cn('w-[3px] rounded-full bg-current transition-transform duration-100 ease-out', active && 'animate-[wave_0.9s_ease-in-out_infinite]', barClassName)}
+            className={cn(
+              'w-[3px] rounded-full bg-current transition-transform duration-100 ease-out',
+              active && 'animate-[wave_0.9s_ease-in-out_infinite]',
+              barClassName,
+            )}
             style={{
               height: '100%',
               transform: `scaleY(${scale})`,

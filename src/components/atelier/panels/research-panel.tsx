@@ -34,7 +34,7 @@ export function ResearchPanel({ onResearch, onSave }: Props) {
     <div className="flex h-full flex-col">
       <form onSubmit={run} className="flex gap-2 px-4 pb-3">
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" />
+          <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-faint" />
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -49,7 +49,7 @@ export function ResearchPanel({ onResearch, onSave }: Props) {
         </Button>
       </form>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 scrollbar-thin">
+      <div className="min-h-0 flex-1 scrollbar-thin overflow-y-auto px-4 pb-4">
         {!result && !busy && (
           <EmptyState icon={<Globe />} title="Recherche documentaire" className="py-8">
             Un dossier sourcé (Google Search) sur une époque, un lieu, un métier… pour nourrir votre récit sans quitter l’atelier.
@@ -57,10 +57,10 @@ export function ResearchPanel({ onResearch, onSave }: Props) {
         )}
         {busy && (
           <div className="space-y-3 pt-2" aria-live="polite" aria-busy="true">
-            <div className="skeleton h-4 w-3/4" />
-            <div className="skeleton h-4 w-full" />
-            <div className="skeleton h-4 w-5/6" />
-            <div className="skeleton mt-4 h-20 w-full" />
+            <div className="h-4 w-3/4 skeleton" />
+            <div className="h-4 w-full skeleton" />
+            <div className="h-4 w-5/6 skeleton" />
+            <div className="mt-4 h-20 w-full skeleton" />
           </div>
         )}
         {result && !busy && (
@@ -78,11 +78,16 @@ export function ResearchPanel({ onResearch, onSave }: Props) {
             )}
             {result.r.sources.length > 0 && (
               <div>
-                <h4 className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-faint">Sources</h4>
+                <h4 className="mb-1.5 text-xs font-semibold tracking-wider text-faint uppercase">Sources</h4>
                 <ul className="space-y-1">
                   {result.r.sources.map((s) => (
                     <li key={s.uri}>
-                      <a href={s.uri} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-1.5 text-[13px] text-muted hover:text-text">
+                      <a
+                        href={s.uri}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        className="flex items-center gap-1.5 text-[13px] text-muted hover:text-text"
+                      >
                         <ExternalLink className="size-3.5 shrink-0" /> <span className="truncate">{s.title}</span>
                       </a>
                     </li>

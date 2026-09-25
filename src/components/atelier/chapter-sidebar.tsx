@@ -28,7 +28,18 @@ interface Props {
   onDelete: (id: string) => void;
 }
 
-export function ChapterSidebar({ chapters, activeId, totalWords, targetWords, onSelect, onAdd, onRename, onStatus, onMove, onDelete }: Props) {
+export function ChapterSidebar({
+  chapters,
+  activeId,
+  totalWords,
+  targetWords,
+  onSelect,
+  onAdd,
+  onRename,
+  onStatus,
+  onMove,
+  onDelete,
+}: Props) {
   const [editing, setEditing] = useState<string | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [overIndex, setOverIndex] = useState<number | null>(null);
@@ -36,14 +47,14 @@ export function ChapterSidebar({ chapters, activeId, totalWords, targetWords, on
 
   return (
     <nav aria-label="Chapitres" className="flex h-full flex-col">
-      <div className="flex items-center justify-between px-4 pb-2 pt-4">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-faint">Chapitres</h2>
+      <div className="flex items-center justify-between px-4 pt-4 pb-2">
+        <h2 className="text-xs font-semibold tracking-wider text-faint uppercase">Chapitres</h2>
         <Button size="icon-sm" variant="ghost" onClick={onAdd} aria-label="Nouveau chapitre">
           <Plus className="size-4" />
         </Button>
       </div>
 
-      <ol className="min-h-0 flex-1 space-y-0.5 overflow-y-auto px-2 pb-4 scrollbar-thin">
+      <ol className="min-h-0 flex-1 scrollbar-thin space-y-0.5 overflow-y-auto px-2 pb-4">
         {chapters.map((c, i) => {
           const active = c.id === activeId;
           return (
@@ -71,7 +82,10 @@ export function ChapterSidebar({ chapters, activeId, totalWords, targetWords, on
               }}
               className={cn(
                 'group relative rounded-lg transition',
-                overIndex === i && dragId && dragId !== c.id && 'before:absolute before:inset-x-2 before:-top-px before:h-0.5 before:rounded-full before:bg-ember',
+                overIndex === i &&
+                  dragId &&
+                  dragId !== c.id &&
+                  'before:absolute before:inset-x-2 before:-top-px before:h-0.5 before:rounded-full before:bg-ember',
                 dragId === c.id && 'opacity-40',
               )}
             >
@@ -93,7 +107,7 @@ export function ChapterSidebar({ chapters, activeId, totalWords, targetWords, on
                     onBlur={(e) => e.currentTarget.form?.requestSubmit()}
                     onKeyDown={(e) => e.key === 'Escape' && setEditing(null)}
                     aria-label="Titre du chapitre"
-                    className="h-9 w-full rounded-md border border-iris bg-surface px-2 text-sm outline-none ring-4 ring-iris/15"
+                    className="h-9 w-full rounded-md border border-iris bg-surface px-2 text-sm ring-4 ring-iris/15 outline-none"
                   />
                 </form>
               ) : (
@@ -103,7 +117,10 @@ export function ChapterSidebar({ chapters, activeId, totalWords, targetWords, on
                     active ? 'bg-surface text-text shadow-soft ring-1 ring-border' : 'text-muted hover:bg-surface-2/70 hover:text-text',
                   )}
                 >
-                  <GripVertical className="ml-1 hidden size-3.5 shrink-0 cursor-grab text-faint opacity-0 group-hover:opacity-100 md:block" aria-hidden />
+                  <GripVertical
+                    className="ml-1 hidden size-3.5 shrink-0 cursor-grab text-faint opacity-0 group-hover:opacity-100 md:block"
+                    aria-hidden
+                  />
                   <button
                     type="button"
                     onClick={() => onSelect(c.id)}
@@ -128,7 +145,7 @@ export function ChapterSidebar({ chapters, activeId, totalWords, targetWords, on
                       <button
                         type="button"
                         aria-label={`Actions pour ${c.title}`}
-                        className="grid size-7 shrink-0 place-items-center rounded-md text-faint opacity-0 transition hover:bg-surface-2 hover:text-text focus:opacity-100 group-hover:opacity-100 data-[state=open]:opacity-100 max-md:opacity-100"
+                        className="grid size-7 shrink-0 place-items-center rounded-md text-faint opacity-0 transition group-hover:opacity-100 hover:bg-surface-2 hover:text-text focus:opacity-100 data-[state=open]:opacity-100 max-md:opacity-100"
                       >
                         <MoreHorizontal className="size-4" />
                       </button>
@@ -169,9 +186,7 @@ export function ChapterSidebar({ chapters, activeId, totalWords, targetWords, on
 
       <div className="border-t border-border px-4 py-3">
         <div className="flex items-center gap-3">
-          {targetWords ? (
-            <ProgressRing value={totalWords / targetWords} size={34} label="Progression du manuscrit" />
-          ) : null}
+          {targetWords ? <ProgressRing value={totalWords / targetWords} size={34} label="Progression du manuscrit" /> : null}
           <div className="text-xs leading-tight">
             <p className="font-medium text-text">{formatNumber(totalWords)} mots</p>
             <p className="text-faint">
@@ -183,7 +198,10 @@ export function ChapterSidebar({ chapters, activeId, totalWords, targetWords, on
 
       <Dialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
         {confirm && (
-          <DialogContent title="Supprimer ce chapitre ?" description={`« ${confirm.title} » sera retiré du manuscrit. Une copie est conservée dans les versions.`}>
+          <DialogContent
+            title="Supprimer ce chapitre ?"
+            description={`« ${confirm.title} » sera retiré du manuscrit. Une copie est conservée dans les versions.`}
+          >
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setConfirm(null)}>
                 Annuler

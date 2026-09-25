@@ -36,7 +36,8 @@ export function profileFromData(data: Record<string, unknown> | undefined): Prof
   const consent = data.aiConsent as { version?: unknown; acceptedAt?: unknown } | null | undefined;
   return {
     penName: typeof data.penName === 'string' ? data.penName : '',
-    avatarColor: typeof data.avatarColor === 'string' && /^#[0-9a-f]{6}$/i.test(data.avatarColor) ? data.avatarColor : DEFAULT_PROFILE.avatarColor,
+    avatarColor:
+      typeof data.avatarColor === 'string' && /^#[0-9a-f]{6}$/i.test(data.avatarColor) ? data.avatarColor : DEFAULT_PROFILE.avatarColor,
     avatarUrl: typeof data.avatarUrl === 'string' && data.avatarUrl.startsWith('data:image/') ? data.avatarUrl : '',
     lastManuscriptId:
       typeof data.lastManuscriptId === 'string'
@@ -45,9 +46,7 @@ export function profileFromData(data: Record<string, unknown> | undefined): Prof
           ? data.lastActiveManuscriptId
           : undefined,
     aiConsent:
-      consent && typeof consent.version === 'number'
-        ? { version: consent.version, acceptedAt: toMillis(consent.acceptedAt) }
-        : null,
+      consent && typeof consent.version === 'number' ? { version: consent.version, acceptedAt: toMillis(consent.acceptedAt) } : null,
     dailyGoal: typeof data.dailyGoal === 'number' && data.dailyGoal > 0 ? Math.min(20000, data.dailyGoal) : DEFAULT_PROFILE.dailyGoal,
     dictationEngine: data.dictationEngine === 'browser' || data.dictationEngine === 'cloud' ? data.dictationEngine : 'auto',
     createdAt: toMillis(data.createdAt),

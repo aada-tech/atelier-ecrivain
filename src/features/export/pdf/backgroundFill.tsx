@@ -32,7 +32,13 @@ export function isGradientValue(value?: string | null): boolean {
 export function parseCssGradient(value: string): ParsedGradient {
   const match = value.trim().match(GRADIENT_RE);
   if (!match) {
-    return { angleDeg: 180, stops: [{ offset: 0, color: '#000000' }, { offset: 1, color: '#000000' }] };
+    return {
+      angleDeg: 180,
+      stops: [
+        { offset: 0, color: '#000000' },
+        { offset: 1, color: '#000000' },
+      ],
+    };
   }
 
   const parts = match[1].split(',').map((p) => p.trim());
@@ -58,11 +64,7 @@ export function parseCssGradient(value: string): ParsedGradient {
     const bits = part.trim().split(/\s+/);
     const color = bits[0];
     const pctMatch = bits[1] && bits[1].match(/^(\d+(?:\.\d+)?)%$/);
-    const offset = pctMatch
-      ? parseFloat(pctMatch[1]) / 100
-      : colorParts.length === 1
-        ? 0
-        : idx / (colorParts.length - 1);
+    const offset = pctMatch ? parseFloat(pctMatch[1]) / 100 : colorParts.length === 1 ? 0 : idx / (colorParts.length - 1);
     return { offset, color };
   });
 
@@ -85,13 +87,7 @@ function angleToVector(angleDeg: number) {
  * strings. Use this instead of `style={{ backgroundColor: value }}` anywhere a
  * cover/background color coming from CoverConfig.background is rendered in a PDF.
  */
-export function PageBackgroundFill({
-  value,
-  gradientId,
-}: {
-  value: string;
-  gradientId: string;
-}) {
+export function PageBackgroundFill({ value, gradientId }: { value: string; gradientId: string }) {
   if (!isGradientValue(value)) {
     return (
       <View
@@ -111,11 +107,7 @@ export function PageBackgroundFill({
   const { x1, y1, x2, y2 } = angleToVector(angleDeg);
 
   return (
-    <Svg
-      style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-      viewBox="0 0 1 1"
-      preserveAspectRatio="none"
-    >
+    <Svg style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} viewBox="0 0 1 1" preserveAspectRatio="none">
       <Defs>
         <LinearGradient id={gradientId} x1={x1} y1={y1} x2={x2} y2={y2}>
           {stops.map((s, i) => (
@@ -134,11 +126,7 @@ export function PageBackgroundFill({
  * the user saw while editing. */
 export function ReadabilityScrim({ gradientId }: { gradientId: string }) {
   return (
-    <Svg
-      style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-      viewBox="0 0 1 1"
-      preserveAspectRatio="none"
-    >
+    <Svg style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} viewBox="0 0 1 1" preserveAspectRatio="none">
       <Defs>
         <LinearGradient id={gradientId} x1={0} y1={0} x2={0} y2={1}>
           <Stop offset={0} stopColor="#000000" stopOpacity={0.75} />

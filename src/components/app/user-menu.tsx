@@ -39,12 +39,16 @@ export function UserMenu({ mid }: { mid?: string }) {
   return (
     <Menu>
       <MenuTrigger asChild>
-        <button type="button" className="rounded-full ring-offset-2 ring-offset-bg transition hover:ring-2 hover:ring-border-strong" aria-label="Menu du compte">
+        <button
+          type="button"
+          className="rounded-full ring-offset-2 ring-offset-bg transition hover:ring-2 hover:ring-border-strong"
+          aria-label="Menu du compte"
+        >
           <Avatar />
         </button>
       </MenuTrigger>
       <MenuContent>
-        <div className="px-2.5 pb-2 pt-1.5">
+        <div className="px-2.5 pt-1.5 pb-2">
           <p className="truncate text-sm font-medium">{displayName}</p>
           <p className="truncate text-xs text-faint">{user?.isAnonymous ? 'Compte d’essai' : user?.email}</p>
         </div>

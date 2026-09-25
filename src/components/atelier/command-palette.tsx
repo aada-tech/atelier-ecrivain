@@ -69,7 +69,7 @@ export function CommandPalette({ open, onOpenChange, actions, chapters, onOpenCh
       <D.Portal>
         <D.Overlay className="fixed inset-0 z-50 bg-overlay backdrop-blur-[2px]" />
         <D.Content
-          className="fixed left-1/2 top-[12vh] z-50 w-[min(94vw,620px)] -translate-x-1/2 overflow-hidden rounded-2xl border border-border bg-surface shadow-pop data-[state=open]:animate-[fade-up_0.2s_var(--ease-out-expo)]"
+          className="fixed top-[12vh] left-1/2 z-50 w-[min(94vw,620px)] -translate-x-1/2 overflow-hidden rounded-2xl border border-border bg-surface shadow-pop data-[state=open]:animate-[fade-up_0.2s_var(--ease-out-expo)]"
           aria-describedby={undefined}
         >
           <D.Title className="sr-only">Palette de commandes</D.Title>
@@ -84,7 +84,7 @@ export function CommandPalette({ open, onOpenChange, actions, chapters, onOpenCh
               />
               <Kbd>Échap</Kbd>
             </div>
-            <Command.List className="max-h-[min(60vh,440px)] overflow-y-auto p-2 scrollbar-thin">
+            <Command.List className="max-h-[min(60vh,440px)] scrollbar-thin overflow-y-auto p-2">
               <Command.Empty className="px-3 py-8 text-center text-sm text-muted">Aucun résultat.</Command.Empty>
 
               {hits.length > 0 && (
@@ -102,7 +102,10 @@ export function CommandPalette({ open, onOpenChange, actions, chapters, onOpenCh
                       <Search className="size-4 text-amber" />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[13px] font-medium">
-                          {h.chapter.title} <span className="font-normal text-faint">· {h.count} occurrence{h.count > 1 ? 's' : ''}</span>
+                          {h.chapter.title}{' '}
+                          <span className="font-normal text-faint">
+                            · {h.count} occurrence{h.count > 1 ? 's' : ''}
+                          </span>
                         </span>
                         <span className="block truncate font-serif text-[13px] text-muted">{h.snippet}</span>
                       </span>

@@ -126,7 +126,10 @@ export function useWorkspace(uid: string, mid: string) {
     if (counterTimer.current) clearTimeout(counterTimer.current);
     counterTimer.current = setTimeout(() => {
       const list = chaptersRef.current;
-      const total = list.reduce((s, c) => s + (draftsRef.current[c.id]?.doc ? docWordCount(draftsRef.current[c.id]!.doc!) : c.wordCount), 0);
+      const total = list.reduce(
+        (s, c) => s + (draftsRef.current[c.id]?.doc ? docWordCount(draftsRef.current[c.id]!.doc!) : c.wordCount),
+        0,
+      );
       void updateManuscript(uid, mid, { wordCount: total, chapterCount: list.length }).catch(() => {});
     }, 4_000);
   }, [uid, mid]);

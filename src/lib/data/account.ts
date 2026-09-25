@@ -23,9 +23,7 @@ export async function collectUserData(uid: string) {
       getDocs(refs.metaCol(uid, m.id)),
       getDocs(refs.snapshots(uid, m.id)),
     ]);
-    const chapters = chaptersSnap.docs
-      .map((d, i) => chapterFromFirestore(d.id, d.data(), i))
-      .sort((a, b) => a.order - b.order);
+    const chapters = chaptersSnap.docs.map((d, i) => chapterFromFirestore(d.id, d.data(), i)).sort((a, b) => a.order - b.order);
     const data = m.data();
     const title = typeof data.title === 'string' ? data.title : 'Sans titre';
     manuscripts.push({

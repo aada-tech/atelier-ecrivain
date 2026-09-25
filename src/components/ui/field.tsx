@@ -4,10 +4,7 @@ import { cn } from '@/lib/utils';
 const base =
   'w-full rounded-lg border border-border bg-surface px-3 text-sm text-text placeholder:text-faint shadow-[0_1px_0_rgb(0_0_0/0.02)] transition focus:border-iris focus:outline-none focus:ring-4 focus:ring-iris/15 disabled:opacity-60';
 
-export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function Input(
-  { className, ...props },
-  ref,
-) {
+export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function Input({ className, ...props }, ref) {
   return <input ref={ref} className={cn(base, 'h-10', className)} {...props} />;
 });
 

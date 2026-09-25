@@ -25,7 +25,12 @@ function doc(...paras: string[]): DocNode {
 }
 
 export const TEMPLATES: Template[] = [
-  { id: 'blank', label: 'Page blanche', description: 'Un premier chapitre, rien d’autre.', chapters: [{ title: 'Chapitre 1', doc: blank() }] },
+  {
+    id: 'blank',
+    label: 'Page blanche',
+    description: 'Un premier chapitre, rien d’autre.',
+    chapters: [{ title: 'Chapitre 1', doc: blank() }],
+  },
   {
     id: 'novel',
     label: 'Roman',

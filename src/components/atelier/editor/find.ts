@@ -25,11 +25,7 @@ export function normalizeForSearch(s: string, caseInsensitive = false): string {
  * bloc. Les appels de note (atomes) sont ignorés pour correspondre au texte
  * brut envoyé à l'IA.
  */
-export function findTextRanges(
-  doc: PMNode,
-  needle: string,
-  opts: { caseInsensitive?: boolean; limit?: number } = {},
-): TextRange[] {
+export function findTextRanges(doc: PMNode, needle: string, opts: { caseInsensitive?: boolean; limit?: number } = {}): TextRange[] {
   const ci = Boolean(opts.caseInsensitive);
   const target = normalizeForSearch(needle, ci);
   if (!target.trim()) return [];

@@ -24,7 +24,10 @@ export async function POST(req: Request) {
       parts: [{ text: `Sujet de recherche : ${body.query}\n${body.context ? wrapManuscript(body.context) : ''}` }],
     });
     const report = result.text.slice(0, 20_000);
-    const lines = report.split('\n').map((l) => l.trim()).filter(Boolean);
+    const lines = report
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
     const summary = lines.find((l) => !l.startsWith('#') && !/^[-*•]/.test(l)) ?? '';
     const keyPoints = lines
       .filter((l) => /^[-*•]\s+/.test(l))

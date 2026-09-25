@@ -12,11 +12,7 @@ export interface DayStat {
 /** Ajoute des mots écrits aujourd'hui (seuls les ajouts nets positifs comptent). */
 export async function recordWords(uid: string, delta: number) {
   if (!Number.isFinite(delta) || delta <= 0) return;
-  await setDoc(
-    refs.stat(uid, dayKey()),
-    { words: increment(Math.min(delta, 20_000)), updatedAt: serverTimestamp() },
-    { merge: true },
-  );
+  await setDoc(refs.stat(uid, dayKey()), { words: increment(Math.min(delta, 20_000)), updatedAt: serverTimestamp() }, { merge: true });
 }
 
 export function subscribeRecentStats(uid: string, days: number, cb: (stats: DayStat[]) => void) {

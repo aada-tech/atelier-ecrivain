@@ -123,7 +123,10 @@ export function ReaderView({ mid }: { mid: string }) {
   useEffect(() => {
     if (!chapter) return;
     const progress = paged ? (pages > 1 ? page / (pages - 1) : 0) : 0;
-    const t = setTimeout(() => void saveReaderState(user.uid, mid, { position: { chapterId: chapter.id, progress } }).catch(() => {}), 1_500);
+    const t = setTimeout(
+      () => void saveReaderState(user.uid, mid, { position: { chapterId: chapter.id, progress } }).catch(() => {}),
+      1_500,
+    );
     return () => clearTimeout(t);
   }, [chapter, page, pages, paged, user.uid, mid]);
 
@@ -207,7 +210,7 @@ export function ReaderView({ mid }: { mid: string }) {
   if (!chapters || !manuscript) {
     return (
       <div className="grid min-h-dvh place-items-center">
-        <div className="skeleton h-4 w-40" />
+        <div className="h-4 w-40 skeleton" />
       </div>
     );
   }
@@ -233,7 +236,7 @@ export function ReaderView({ mid }: { mid: string }) {
   const content = (
     <>
       <header className="mb-10 text-center" style={{ breakInside: 'avoid' }}>
-        <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-ember">Chapitre {index + 1}</p>
+        <p className="font-mono text-[11px] tracking-[0.25em] text-ember uppercase">Chapitre {index + 1}</p>
         <h1 className="mt-3 font-display text-[2.2em] leading-[1.1]">{chapter.title}</h1>
       </header>
       <ProseView
@@ -283,10 +286,20 @@ export function ReaderView({ mid }: { mid: string }) {
             variant="ghost"
             aria-label={speech.state === 'playing' ? 'Mettre la lecture en pause' : 'Lire à voix haute'}
             onClick={() =>
-              speech.state === 'playing' ? speech.pause() : speech.state === 'paused' ? speech.resume() : speech.play(`${chapter.title}. ${docToPlainText(chapter.doc)}`)
+              speech.state === 'playing'
+                ? speech.pause()
+                : speech.state === 'paused'
+                  ? speech.resume()
+                  : speech.play(`${chapter.title}. ${docToPlainText(chapter.doc)}`)
             }
           >
-            {speech.state === 'playing' ? <Pause className="size-4" /> : speech.state === 'paused' ? <Play className="size-4" /> : <Volume2 className="size-4" />}
+            {speech.state === 'playing' ? (
+              <Pause className="size-4" />
+            ) : speech.state === 'paused' ? (
+              <Play className="size-4" />
+            ) : (
+              <Volume2 className="size-4" />
+            )}
           </Button>
         )}
         {speech.state !== 'idle' && (
@@ -305,7 +318,7 @@ export function ReaderView({ mid }: { mid: string }) {
       {/* ── Page ── */}
       <div
         ref={viewport}
-        className={cn('relative flex-1 select-text', paged ? 'overflow-hidden' : 'overflow-y-auto scrollbar-thin')}
+        className={cn('relative flex-1 select-text', paged ? 'overflow-hidden' : 'scrollbar-thin overflow-y-auto')}
         style={{ paddingTop: 72, paddingBottom: paged ? 64 : 120 }}
         onPointerUp={onPointerUp}
         onTouchStart={onTouchStart}
@@ -356,20 +369,45 @@ export function ReaderView({ mid }: { mid: string }) {
       </div>
 
       {/* ── Progression ── */}
-      <footer className={cn('absolute inset-x-0 bottom-0 z-20 px-4 pb-[max(10px,env(safe-area-inset-bottom))] pt-2 transition duration-300', !chrome && 'opacity-40')}>
+      <footer
+        className={cn(
+          'absolute inset-x-0 bottom-0 z-20 px-4 pt-2 pb-[max(10px,env(safe-area-inset-bottom))] transition duration-300',
+          !chrome && 'opacity-40',
+        )}
+      >
         <div className="mx-auto flex max-w-3xl items-center gap-3 text-[11px] text-faint">
           {paged && (
-            <button type="button" onClick={() => go(-1)} aria-label="Page précédente" className="grid size-8 place-items-center rounded-full hover:bg-surface-2">
+            <button
+              type="button"
+              onClick={() => go(-1)}
+              aria-label="Page précédente"
+              className="grid size-8 place-items-center rounded-full hover:bg-surface-2"
+            >
               <ChevronLeft className="size-4" />
             </button>
           )}
           <span className="tabular-nums">{Math.round(overall * 100)} %</span>
-          <div className="h-1 flex-1 overflow-hidden rounded-full bg-surface-3" role="progressbar" aria-label="Progression dans le livre" aria-valuenow={Math.round(overall * 100)} aria-valuemin={0} aria-valuemax={100}>
+          <div
+            className="h-1 flex-1 overflow-hidden rounded-full bg-surface-3"
+            role="progressbar"
+            aria-label="Progression dans le livre"
+            aria-valuenow={Math.round(overall * 100)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
             <div className="h-full rounded-full bg-ember transition-[width] duration-500" style={{ width: `${overall * 100}%` }} />
           </div>
-          <span className="whitespace-nowrap">{paged ? `${page + 1}/${pages} · ` : ''}{minutesLeft} min</span>
+          <span className="whitespace-nowrap">
+            {paged ? `${page + 1}/${pages} · ` : ''}
+            {minutesLeft} min
+          </span>
           {paged && (
-            <button type="button" onClick={() => go(1)} aria-label="Page suivante" className="grid size-8 place-items-center rounded-full hover:bg-surface-2">
+            <button
+              type="button"
+              onClick={() => go(1)}
+              aria-label="Page suivante"
+              className="grid size-8 place-items-center rounded-full hover:bg-surface-2"
+            >
               <ChevronRight className="size-4" />
             </button>
           )}
@@ -385,7 +423,14 @@ export function ReaderView({ mid }: { mid: string }) {
         >
           <Highlighter className="ml-2 size-4 text-muted" />
           {(['amber', 'sage', 'iris', 'ember'] as const).map((c) => (
-            <button key={c} type="button" onClick={() => void addHighlight(c)} aria-label={`Surligner en ${c}`} className="size-7 rounded-full transition hover:scale-110" style={{ background: `var(--c-${c})`, opacity: 0.75 }} />
+            <button
+              key={c}
+              type="button"
+              onClick={() => void addHighlight(c)}
+              aria-label={`Surligner en ${c}`}
+              className="size-7 rounded-full transition hover:scale-110"
+              style={{ background: `var(--c-${c})`, opacity: 0.75 }}
+            />
           ))}
         </div>
       )}
@@ -422,7 +467,10 @@ export function ReaderView({ mid }: { mid: string }) {
                     setTocOpen(false);
                     viewport.current?.scrollTo({ top: 0 });
                   }}
-                  className={cn('flex w-full items-baseline gap-3 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-surface-2', i === index && 'bg-surface-2 font-medium')}
+                  className={cn(
+                    'flex w-full items-baseline gap-3 rounded-lg px-3 py-2 text-left text-sm transition hover:bg-surface-2',
+                    i === index && 'bg-surface-2 font-medium',
+                  )}
                 >
                   <span className="w-5 font-mono text-[11px] text-faint">{i + 1}</span>
                   <span className="flex-1">{c.title}</span>
@@ -433,7 +481,7 @@ export function ReaderView({ mid }: { mid: string }) {
           </ol>
           {reader.highlights.length > 0 && (
             <>
-              <h3 className="mb-2 mt-8 text-xs font-semibold uppercase tracking-wider text-faint">Surlignages</h3>
+              <h3 className="mt-8 mb-2 text-xs font-semibold tracking-wider text-faint uppercase">Surlignages</h3>
               <ul className="space-y-2">
                 {reader.highlights
                   .slice()
@@ -451,7 +499,10 @@ export function ReaderView({ mid }: { mid: string }) {
                             setTocOpen(false);
                           }}
                         >
-                          <p className="line-clamp-3 font-serif text-sm" style={{ borderLeft: `3px solid var(--c-${h.color})`, paddingLeft: 10 }}>
+                          <p
+                            className="line-clamp-3 font-serif text-sm"
+                            style={{ borderLeft: `3px solid var(--c-${h.color})`, paddingLeft: 10 }}
+                          >
                             {h.text}
                           </p>
                           <p className="mt-1 text-[11px] text-faint">{chapters[ci]?.title ?? 'Chapitre supprimé'}</p>
@@ -492,24 +543,63 @@ export function ReaderView({ mid }: { mid: string }) {
                 <span className="font-medium">Taille</span>
                 <span className="text-muted">{prefs.fontSize} px</span>
               </div>
-              <Slider min={15} max={28} step={1} value={[prefs.fontSize]} onValueChange={([v]) => setPrefs((p) => ({ ...p, fontSize: v }))} aria-label="Taille du texte" />
+              <Slider
+                min={15}
+                max={28}
+                step={1}
+                value={[prefs.fontSize]}
+                onValueChange={([v]) => setPrefs((p) => ({ ...p, fontSize: v }))}
+                aria-label="Taille du texte"
+              />
             </div>
             <div>
               <div className="mb-2 flex justify-between">
                 <span className="font-medium">Interligne</span>
                 <span className="text-muted">{prefs.leading.toFixed(2)}</span>
               </div>
-              <Slider min={1.35} max={2.1} step={0.05} value={[prefs.leading]} onValueChange={([v]) => setPrefs((p) => ({ ...p, leading: v }))} aria-label="Interligne" />
+              <Slider
+                min={1.35}
+                max={2.1}
+                step={0.05}
+                value={[prefs.leading]}
+                onValueChange={([v]) => setPrefs((p) => ({ ...p, leading: v }))}
+                aria-label="Interligne"
+              />
             </div>
-            <Segmented label="Police" value={prefs.font} options={[['serif', 'Literata'], ['sans', 'Geist']]} onChange={(font) => setPrefs((p) => ({ ...p, font }))} />
-            <Segmented label="Largeur" value={prefs.width} options={[['narrow', 'Étroite'], ['medium', 'Moyenne'], ['wide', 'Large']]} onChange={(width) => setPrefs((p) => ({ ...p, width }))} />
-            <Segmented label="Mode" value={prefs.mode} options={[['pages', 'Pages'], ['scroll', 'Défilement']]} onChange={(mode) => setPrefs((p) => ({ ...p, mode }))} />
+            <Segmented
+              label="Police"
+              value={prefs.font}
+              options={[
+                ['serif', 'Literata'],
+                ['sans', 'Geist'],
+              ]}
+              onChange={(font) => setPrefs((p) => ({ ...p, font }))}
+            />
+            <Segmented
+              label="Largeur"
+              value={prefs.width}
+              options={[
+                ['narrow', 'Étroite'],
+                ['medium', 'Moyenne'],
+                ['wide', 'Large'],
+              ]}
+              onChange={(width) => setPrefs((p) => ({ ...p, width }))}
+            />
+            <Segmented
+              label="Mode"
+              value={prefs.mode}
+              options={[
+                ['pages', 'Pages'],
+                ['scroll', 'Défilement'],
+              ]}
+              onChange={(mode) => setPrefs((p) => ({ ...p, mode }))}
+            />
           </div>
         </DialogContent>
       </Dialog>
 
       {!chrome && (
-        <button type="button" className="sr-only focus:not-sr-only focus:fixed focus:right-4 focus:top-4" onClick={() => setChrome(true)}>
+        <button type="button" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:right-4" onClick={() => setChrome(true)}>
           <X className="size-4" /> Afficher les commandes
         </button>
       )}
@@ -517,13 +607,29 @@ export function ReaderView({ mid }: { mid: string }) {
   );
 }
 
-function Segmented<T extends string>({ label, value, options, onChange }: { label: string; value: T; options: [T, string][]; onChange: (v: T) => void }) {
+function Segmented<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: [T, string][];
+  onChange: (v: T) => void;
+}) {
   return (
     <div>
       <p className="mb-2 font-medium">{label}</p>
       <div className="grid gap-1 rounded-xl bg-surface-2 p-1" style={{ gridTemplateColumns: `repeat(${options.length}, 1fr)` }}>
         {options.map(([v, l]) => (
-          <button key={v} type="button" onClick={() => onChange(v)} aria-pressed={value === v} className={cn('h-9 rounded-lg text-sm text-muted', value === v && 'bg-surface text-text shadow-soft')}>
+          <button
+            key={v}
+            type="button"
+            onClick={() => onChange(v)}
+            aria-pressed={value === v}
+            className={cn('h-9 rounded-lg text-sm text-muted', value === v && 'bg-surface text-text shadow-soft')}
+          >
             {l}
           </button>
         ))}

@@ -1,12 +1,4 @@
-import type {
-  BlockNode,
-  DocNode,
-  InlineNode,
-  MarkType,
-  Note,
-  ParagraphNode,
-  TextNode,
-} from './types';
+import type { BlockNode, DocNode, InlineNode, MarkType, Note, ParagraphNode, TextNode } from './types';
 import { EMPTY_DOC } from './types';
 
 const MAX_TEXT_LENGTH = 200_000;
@@ -176,13 +168,9 @@ export function textToParagraphs(text: string): ParagraphNode[] {
 // ── Rendu neutre (liseuse, PDF, EPUB, Markdown) ────────────────────────────
 
 export type Run =
-  | { kind: 'text'; text: string; bold?: boolean; italic?: boolean }
-  | { kind: 'break' }
-  | { kind: 'note'; id: string; number: number };
+  { kind: 'text'; text: string; bold?: boolean; italic?: boolean } | { kind: 'break' } | { kind: 'note'; id: string; number: number };
 
-export type RenderBlock =
-  | { type: 'p' | 'h2' | 'h3' | 'quote'; runs: Run[] }
-  | { type: 'scene-break' };
+export type RenderBlock = { type: 'p' | 'h2' | 'h3' | 'quote'; runs: Run[] } | { type: 'scene-break' };
 
 function toRuns(nodes: InlineNode[] | undefined, numbers: Map<string, number>): Run[] {
   const runs: Run[] = [];

@@ -24,8 +24,16 @@ export function ActivityChart({ stats, days = 30 }: { stats: DayStat[]; days?: n
 
   return (
     <figure className="relative">
-      <figcaption className="sr-only">Mots écrits par jour sur les {days} derniers jours ({formatNumber(total)} au total)</figcaption>
-      <div className="flex items-end gap-[2px]" style={{ height: H }} role="img" aria-label={`Activité : ${formatNumber(total)} mots en ${days} jours`} onMouseLeave={() => setHover(null)}>
+      <figcaption className="sr-only">
+        Mots écrits par jour sur les {days} derniers jours ({formatNumber(total)} au total)
+      </figcaption>
+      <div
+        className="flex items-end gap-[2px]"
+        style={{ height: H }}
+        role="img"
+        aria-label={`Activité : ${formatNumber(total)} mots en ${days} jours`}
+        onMouseLeave={() => setHover(null)}
+      >
         {series.map((s, i) => {
           const h = s.words ? Math.max(3, (s.words / niceMax) * H) : 2;
           const today = i === series.length - 1;
@@ -50,11 +58,13 @@ export function ActivityChart({ stats, days = 30 }: { stats: DayStat[]; days?: n
       </div>
       {hover !== null && (
         <div
-          className="pointer-events-none absolute -top-2 z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-lg border border-border bg-surface px-2.5 py-1.5 shadow-lift"
+          className="pointer-events-none absolute -top-2 z-10 -translate-x-1/2 -translate-y-full rounded-lg border border-border bg-surface px-2.5 py-1.5 whitespace-nowrap shadow-lift"
           style={{ left: `${((hover + 0.5) / days) * 100}%` }}
         >
           <p className="text-sm font-semibold text-text">{formatNumber(series[hover].words)} mots</p>
-          <p className="text-[11px] text-muted">{series[hover].date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+          <p className="text-[11px] text-muted">
+            {series[hover].date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
+          </p>
         </div>
       )}
       <table className="sr-only">

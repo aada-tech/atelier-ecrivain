@@ -44,8 +44,8 @@ export function MenuItem({ className, icon, shortcut, tone = 'default', href, ch
     </>
   );
   const cls = cn(
-    'flex h-9 cursor-pointer select-none items-center gap-2.5 rounded-lg px-2.5 outline-none transition-colors',
-    'data-[highlighted]:bg-surface-2 data-[disabled]:pointer-events-none data-[disabled]:opacity-45',
+    'flex h-9 cursor-pointer items-center gap-2.5 rounded-lg px-2.5 transition-colors outline-none select-none',
+    'data-[disabled]:pointer-events-none data-[disabled]:opacity-45 data-[highlighted]:bg-surface-2',
     tone === 'danger' && 'text-danger data-[highlighted]:bg-danger-soft',
     className,
   );
@@ -64,7 +64,7 @@ export function MenuItem({ className, icon, shortcut, tone = 'default', href, ch
 }
 
 export function MenuLabel({ className, ...props }: ComponentProps<typeof M.Label>) {
-  return <M.Label className={cn('px-2.5 pb-1 pt-2 text-[11px] font-medium uppercase tracking-wider text-faint', className)} {...props} />;
+  return <M.Label className={cn('px-2.5 pt-2 pb-1 text-[11px] font-medium tracking-wider text-faint uppercase', className)} {...props} />;
 }
 
 export function MenuSeparator({ className, ...props }: ComponentProps<typeof M.Separator>) {

@@ -32,7 +32,10 @@ function blocksFrom(lines: string[]): BlockNode[] {
     else if (/^###\s+/.test(p)) blocks.push({ type: 'heading', attrs: { level: 3 }, content: parseInline(p.replace(/^###\s+/, '')) });
     else if (/^##\s+/.test(p)) blocks.push({ type: 'heading', attrs: { level: 2 }, content: parseInline(p.replace(/^##\s+/, '')) });
     else if (/^>\s?/.test(p)) {
-      blocks.push({ type: 'blockquote', content: [{ type: 'paragraph', content: parseInline(p.replace(/^>\s?/gm, '').replace(/\n/g, ' ')) }] });
+      blocks.push({
+        type: 'blockquote',
+        content: [{ type: 'paragraph', content: parseInline(p.replace(/^>\s?/gm, '').replace(/\n/g, ' ')) }],
+      });
     } else blocks.push({ type: 'paragraph', content: parseInline(p.replace(/\s*\n\s*/g, ' ')) });
   }
   return blocks;
@@ -70,6 +73,9 @@ export function importText(source: string, fallbackTitle = 'Chapitre 1'): Import
       const content = blocksFrom(c.lines);
       return { title: c.title, doc: content.length ? { type: 'doc' as const, content } : structuredClone(EMPTY_DOC) };
     })
-    .filter((c, i, all) => all.length === 1 || c.doc.content.some((b) => b.type !== 'paragraph' || (b.content?.length ?? 0) > 0) || c.title !== fallbackTitle);
+    .filter(
+      (c, i, all) =>
+        all.length === 1 || c.doc.content.some((b) => b.type !== 'paragraph' || (b.content?.length ?? 0) > 0) || c.title !== fallbackTitle,
+    );
   return result.length ? result.slice(0, 200) : [{ title: fallbackTitle, doc: structuredClone(EMPTY_DOC) }];
 }

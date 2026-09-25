@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  getDocs,
-  onSnapshot,
-  serverTimestamp,
-  setDoc,
-  writeBatch,
-  type DocumentReference,
-} from 'firebase/firestore';
+import { getDocs, onSnapshot, serverTimestamp, setDoc, writeBatch, type DocumentReference } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase/client';
 import { refs, SESSION_ID } from './refs';
 import type { DocNode, Manuscript } from '@/lib/doc/types';
@@ -30,20 +23,18 @@ export function manuscriptFromData(id: string, data: Record<string, unknown>): M
     updatedAt: toMillis(data.updatedAt) || toMillis(data.createdAt),
     wordCount: typeof data.wordCount === 'number' ? data.wordCount : 0,
     chapterCount:
-      typeof data.chapterCount === 'number'
-        ? data.chapterCount
-        : typeof data.chaptersCount === 'number'
-          ? data.chaptersCount
-          : 0,
+      typeof data.chapterCount === 'number' ? data.chapterCount : typeof data.chaptersCount === 'number' ? data.chaptersCount : 0,
     goal:
       data.goal && typeof data.goal === 'object'
         ? {
-            targetWords: typeof (data.goal as Record<string, unknown>).targetWords === 'number'
-              ? ((data.goal as Record<string, unknown>).targetWords as number)
-              : undefined,
-            deadline: typeof (data.goal as Record<string, unknown>).deadline === 'string'
-              ? ((data.goal as Record<string, unknown>).deadline as string)
-              : undefined,
+            targetWords:
+              typeof (data.goal as Record<string, unknown>).targetWords === 'number'
+                ? ((data.goal as Record<string, unknown>).targetWords as number)
+                : undefined,
+            deadline:
+              typeof (data.goal as Record<string, unknown>).deadline === 'string'
+                ? ((data.goal as Record<string, unknown>).deadline as string)
+                : undefined,
           }
         : undefined,
   };

@@ -6,10 +6,10 @@ import { createRemoteJWKSet, jwtVerify, type JWTPayload } from 'jose';
  * signature RS256 contre les clés publiques de securetoken, émetteur et
  * audience liés au projet. Aucun secret n'est nécessaire.
  */
-const JWKS = createRemoteJWKSet(
-  new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'),
-  { cooldownDuration: 60_000, cacheMaxAge: 6 * 60 * 60 * 1000 },
-);
+const JWKS = createRemoteJWKSet(new URL('https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com'), {
+  cooldownDuration: 60_000,
+  cacheMaxAge: 6 * 60 * 60 * 1000,
+});
 
 export interface VerifiedUser {
   uid: string;

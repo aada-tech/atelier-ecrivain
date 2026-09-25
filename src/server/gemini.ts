@@ -197,7 +197,10 @@ export async function generate(opts: GenerateOptions): Promise<GenerateResult> {
 
 /** Extrait le premier objet/tableau JSON d'une réponse texte (modèles avec outils). */
 export function parseJsonLoose(text: string): unknown {
-  const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+  const cleaned = text
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/```\s*$/, '')
+    .trim();
   try {
     return JSON.parse(cleaned);
   } catch {

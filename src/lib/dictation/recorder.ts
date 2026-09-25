@@ -33,8 +33,8 @@ export class Recorder {
       throw new Error('Impossible d’accéder au micro.');
     }
 
-    const mimeType = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4', 'audio/webm'].find(
-      (t) => MediaRecorder.isTypeSupported?.(t),
+    const mimeType = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4', 'audio/webm'].find((t) =>
+      MediaRecorder.isTypeSupported?.(t),
     );
     this.recorder = new MediaRecorder(this.stream, { ...(mimeType ? { mimeType } : {}), audioBitsPerSecond: 32_000 });
     this.chunks = [];

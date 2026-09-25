@@ -54,7 +54,10 @@ export function tidy(input: string): string {
     .replace(/ ?\u00a0 ?/g, NBSP)
     .replace(/«\u00a0\s+/g, `«${NBSP}`);
   // Capitale en début de phrase.
-  s = s.replace(/([.!?…]\s+|\n\n|^\s*|«\u00a0)(«\u00a0)?(\p{Ll})/gu, (_m, sep: string, quote: string | undefined, ch: string) => `${sep}${quote ?? ''}${ch.toUpperCase()}`);
+  s = s.replace(
+    /([.!?…]\s+|\n\n|^\s*|«\u00a0)(«\u00a0)?(\p{Ll})/gu,
+    (_m, sep: string, quote: string | undefined, ch: string) => `${sep}${quote ?? ''}${ch.toUpperCase()}`,
+  );
   return s.trim();
 }
 
@@ -78,8 +81,37 @@ export function joinDictation(beforeText: string, text: string): string {
 }
 
 const COMMON_STARTS = new Set([
-  'et', 'mais', 'ou', 'donc', 'car', 'puis', 'alors', 'le', 'la', 'les', 'un', 'une', 'des', 'il', 'elle', 'ils',
-  'elles', 'je', 'tu', 'nous', 'vous', 'on', 'ce', 'cette', 'qui', 'que', 'quand', 'comme', 'dans', 'sur', 'avec',
+  'et',
+  'mais',
+  'ou',
+  'donc',
+  'car',
+  'puis',
+  'alors',
+  'le',
+  'la',
+  'les',
+  'un',
+  'une',
+  'des',
+  'il',
+  'elle',
+  'ils',
+  'elles',
+  'je',
+  'tu',
+  'nous',
+  'vous',
+  'on',
+  'ce',
+  'cette',
+  'qui',
+  'que',
+  'quand',
+  'comme',
+  'dans',
+  'sur',
+  'avec',
 ]);
 
 /**
@@ -91,7 +123,12 @@ export function mergeSegment(base: string, addition: string): string {
   const a = addition.trim();
   if (!b) return a;
   if (!a) return b;
-  const norm = (s: string) => s.toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim();
+  const norm = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   const nb = norm(b);
   const na = norm(a);
   if (na === nb || nb.endsWith(na)) return b;

@@ -21,9 +21,7 @@ interface Props {
 
 export function NotesPanel({ notes, doc, editor, highlightedId, onChange }: Props) {
   const numbers = noteNumbering(doc);
-  const footnotes = notes
-    .filter((n) => n.kind === 'footnote' && numbers.has(n.id))
-    .sort((a, b) => numbers.get(a.id)! - numbers.get(b.id)!);
+  const footnotes = notes.filter((n) => n.kind === 'footnote' && numbers.has(n.id)).sort((a, b) => numbers.get(a.id)! - numbers.get(b.id)!);
   const orphans = notes.filter((n) => n.kind === 'footnote' && !numbers.has(n.id));
   const memos = notes.filter((n) => n.kind === 'memo');
 
@@ -32,8 +30,7 @@ export function NotesPanel({ notes, doc, editor, highlightedId, onChange }: Prop
     if (editor) removeNoteRefs(editor, id);
     onChange(notes.filter((n) => n.id !== id));
   };
-  const addMemo = () =>
-    onChange([...notes, { id: createId('n'), kind: 'memo', text: '', source: 'manual', createdAt: Date.now() }]);
+  const addMemo = () => onChange([...notes, { id: createId('n'), kind: 'memo', text: '', source: 'manual', createdAt: Date.now() }]);
   const addFootnote = () => {
     if (!editor) return;
     const id = createId('n');
@@ -52,10 +49,10 @@ export function NotesPanel({ notes, doc, editor, highlightedId, onChange }: Prop
   };
 
   return (
-    <div className="h-full space-y-6 overflow-y-auto p-4 scrollbar-thin">
+    <div className="h-full scrollbar-thin space-y-6 overflow-y-auto p-4">
       <section>
         <header className="mb-2 flex items-center justify-between">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-faint">Notes de bas de page</h3>
+          <h3 className="text-xs font-semibold tracking-wider text-faint uppercase">Notes de bas de page</h3>
           <Button size="xs" variant="ghost" onClick={addFootnote} disabled={!editor}>
             <Plus className="size-3.5" /> Au curseur
           </Button>
@@ -94,7 +91,7 @@ export function NotesPanel({ notes, doc, editor, highlightedId, onChange }: Prop
 
       <section>
         <header className="mb-2 flex items-center justify-between">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-faint">Pense-bêtes</h3>
+          <h3 className="text-xs font-semibold tracking-wider text-faint uppercase">Pense-bêtes</h3>
           <Button size="xs" variant="ghost" onClick={addMemo}>
             <Plus className="size-3.5" /> Ajouter
           </Button>
@@ -162,10 +159,7 @@ function NoteItem({
 
   return (
     <li
-      className={cn(
-        'group rounded-xl border border-border bg-surface p-2.5 transition',
-        highlighted && 'border-iris ring-4 ring-iris/15',
-      )}
+      className={cn('group rounded-xl border border-border bg-surface p-2.5 transition', highlighted && 'border-iris ring-4 ring-iris/15')}
     >
       <div className="flex gap-2">
         {label && (
@@ -213,11 +207,21 @@ function NoteItem({
             </button>
           )}
           {onLocate && (
-            <button type="button" onClick={onLocate} className="grid size-6 place-items-center rounded hover:bg-surface-2 hover:text-text" aria-label="Aller à l’appel de note">
+            <button
+              type="button"
+              onClick={onLocate}
+              className="grid size-6 place-items-center rounded hover:bg-surface-2 hover:text-text"
+              aria-label="Aller à l’appel de note"
+            >
               <LocateFixed className="size-3.5" />
             </button>
           )}
-          <button type="button" onClick={onDelete} className="grid size-6 place-items-center rounded hover:bg-danger-soft hover:text-danger" aria-label="Supprimer la note">
+          <button
+            type="button"
+            onClick={onDelete}
+            className="grid size-6 place-items-center rounded hover:bg-danger-soft hover:text-danger"
+            aria-label="Supprimer la note"
+          >
             <Trash2 className="size-3.5" />
           </button>
         </span>

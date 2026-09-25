@@ -13,9 +13,7 @@ describe('commandes vocales', () => {
 
   it('gère les paragraphes et les guillemets', () => {
     expect(applyVoiceCommands('fin du jour point à la ligne le lendemain il partit')).toBe('Fin du jour.\n\nLe lendemain il partit');
-    expect(applyVoiceCommands('elle dit ouvrez les guillemets bonjour fermez les guillemets')).toBe(
-      `Elle dit «${NB}Bonjour${NB}»`,
-    );
+    expect(applyVoiceCommands('elle dit ouvrez les guillemets bonjour fermez les guillemets')).toBe(`Elle dit «${NB}Bonjour${NB}»`);
   });
 
   it('ne convertit pas « point » au milieu d’une phrase', () => {

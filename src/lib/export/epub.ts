@@ -15,14 +15,16 @@ export interface EpubMeta {
 }
 
 export function escapeXml(s: string): string {
-  return s
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;')
-    // Caractères de contrôle interdits en XML 1.0.
-    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '');
+  return (
+    s
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;')
+      // Caractères de contrôle interdits en XML 1.0.
+      .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '')
+  );
 }
 
 function runsToXhtml(runs: Run[], chapterIdx: number): string {

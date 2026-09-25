@@ -9,7 +9,7 @@ export function Switch({ className, ...props }: ComponentProps<typeof S.Root>) {
     <S.Root
       className={cn(
         'relative inline-flex h-6 w-10 shrink-0 items-center rounded-full border border-border-strong bg-surface-3 transition-colors',
-        'data-[state=checked]:border-transparent data-[state=checked]:bg-ember disabled:opacity-50',
+        'disabled:opacity-50 data-[state=checked]:border-transparent data-[state=checked]:bg-ember',
         className,
       )}
       {...props}

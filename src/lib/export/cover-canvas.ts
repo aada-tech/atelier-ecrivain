@@ -46,7 +46,12 @@ export async function renderCoverJpeg(cover: CoverConfig, meta: BookMetadata): P
     const len = Math.abs(W * Math.cos(rad)) + Math.abs(H * Math.sin(rad));
     const cx = W / 2;
     const cy = H / 2;
-    const grad = ctx.createLinearGradient(cx - (Math.cos(rad) * len) / 2, cy - (Math.sin(rad) * len) / 2, cx + (Math.cos(rad) * len) / 2, cy + (Math.sin(rad) * len) / 2);
+    const grad = ctx.createLinearGradient(
+      cx - (Math.cos(rad) * len) / 2,
+      cy - (Math.sin(rad) * len) / 2,
+      cx + (Math.cos(rad) * len) / 2,
+      cy + (Math.sin(rad) * len) / 2,
+    );
     for (const s of g.stops) grad.addColorStop(s.offset, s.color);
     ctx.fillStyle = grad;
   } else ctx.fillStyle = bg;

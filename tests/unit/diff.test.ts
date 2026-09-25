@@ -11,7 +11,17 @@ describe('diffWords', () => {
     const a = 'La nuit, froide et sombre, tombait.';
     const b = 'La nuit glaciale tombait lentement.';
     const d = diffWords(a, b);
-    expect(d.filter((s) => s.type !== 'ins').map((s) => s.text).join('')).toBe(a);
-    expect(d.filter((s) => s.type !== 'del').map((s) => s.text).join('')).toBe(b);
+    expect(
+      d
+        .filter((s) => s.type !== 'ins')
+        .map((s) => s.text)
+        .join(''),
+    ).toBe(a);
+    expect(
+      d
+        .filter((s) => s.type !== 'del')
+        .map((s) => s.text)
+        .join(''),
+    ).toBe(b);
   });
 });

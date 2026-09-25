@@ -58,7 +58,12 @@ export function VersionsPanel({ uid, mid, chapter, chapterIds, onRestore, onRest
     e.preventDefault();
     setBusy(true);
     try {
-      await createSnapshot(uid, mid, chapter, label.trim() || `Version du ${new Date().toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}`);
+      await createSnapshot(
+        uid,
+        mid,
+        chapter,
+        label.trim() || `Version du ${new Date().toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}`,
+      );
       setLabel('');
       toast.success('Instantané enregistré');
       await refresh();
@@ -80,16 +85,23 @@ export function VersionsPanel({ uid, mid, chapter, chapterIds, onRestore, onRest
   return (
     <div className="flex h-full flex-col">
       <form onSubmit={create} className="flex gap-2 px-4 pb-3">
-        <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Nom de la version (facultatif)" maxLength={120} aria-label="Nom de la version" />
+        <Input
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          placeholder="Nom de la version (facultatif)"
+          maxLength={120}
+          aria-label="Nom de la version"
+        />
         <Button type="submit" variant="secondary" loading={busy}>
           <Camera className="size-4" /> Figer
         </Button>
       </form>
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 scrollbar-thin">
-        {list === null && <div className="skeleton h-16 w-full" />}
+      <div className="min-h-0 flex-1 scrollbar-thin overflow-y-auto px-4 pb-4">
+        {list === null && <div className="h-16 w-full skeleton" />}
         {list?.length === 0 && (
           <EmptyState icon={<History />} title="Aucune version" className="py-8">
-            Figez un état du chapitre avant une réécriture : vous pourrez toujours y revenir. Les suppressions et conflits sont archivés automatiquement.
+            Figez un état du chapitre avant une réécriture : vous pourrez toujours y revenir. Les suppressions et conflits sont archivés
+            automatiquement.
           </EmptyState>
         )}
         <ul className="space-y-2">
@@ -121,13 +133,15 @@ export function VersionsPanel({ uid, mid, chapter, chapterIds, onRestore, onRest
 
         {trash.length > 0 && (
           <section className="mt-6">
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-faint">Chapitres supprimés</h3>
+            <h3 className="mb-2 text-xs font-semibold tracking-wider text-faint uppercase">Chapitres supprimés</h3>
             <ul className="space-y-2">
               {trash.map((s) => (
                 <li key={s.id} className="flex items-center gap-3 rounded-xl border border-dashed border-border px-3 py-2.5">
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-[13.5px] font-medium">{s.title}</p>
-                    <p className="text-xs text-faint">{formatRelative(s.createdAt)} · {formatNumber(s.wordCount)} mots</p>
+                    <p className="text-xs text-faint">
+                      {formatRelative(s.createdAt)} · {formatNumber(s.wordCount)} mots
+                    </p>
                   </div>
                   <Button
                     size="xs"
@@ -148,7 +162,11 @@ export function VersionsPanel({ uid, mid, chapter, chapterIds, onRestore, onRest
 
       <Dialog open={!!preview} onOpenChange={(o) => !o && setPreview(null)}>
         {preview && (
-          <DialogContent title={preview.label || 'Version'} description={`${formatRelative(preview.createdAt)} · ${formatNumber(preview.wordCount)} mots`} className="w-[min(94vw,760px)]">
+          <DialogContent
+            title={preview.label || 'Version'}
+            description={`${formatRelative(preview.createdAt)} · ${formatNumber(preview.wordCount)} mots`}
+            className="w-[min(94vw,760px)]"
+          >
             <div className="rounded-xl bg-paper p-6">
               <ProseView blocks={docToRenderBlocks(preview.doc)} />
             </div>

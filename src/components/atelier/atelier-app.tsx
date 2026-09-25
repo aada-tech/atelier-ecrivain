@@ -152,10 +152,7 @@ export function AtelierApp({ mid }: { mid: string }) {
     [ws],
   );
   const setNotes = useCallback((notes: Note[]) => ws.activeId && ws.updateChapter(ws.activeId, { notes }), [ws]);
-  const setSuggestions = useCallback(
-    (suggestions: Suggestion[]) => ws.activeId && ws.updateChapter(ws.activeId, { suggestions }),
-    [ws],
-  );
+  const setSuggestions = useCallback((suggestions: Suggestion[]) => ws.activeId && ws.updateChapter(ws.activeId, { suggestions }), [ws]);
   const addSuggestions = useCallback(
     (items: Suggestion[]) => {
       if (!active) return;
@@ -198,7 +195,9 @@ export function AtelierApp({ mid }: { mid: string }) {
           );
         }
         count = addSuggestions(collected) ?? 0;
-        toast.success(count ? `${count} rature${count > 1 ? 's' : ''} proposée${count > 1 ? 's' : ''}` : 'Rien à redire : le passage est fluide.');
+        toast.success(
+          count ? `${count} rature${count > 1 ? 's' : ''} proposée${count > 1 ? 's' : ''}` : 'Rien à redire : le passage est fluide.',
+        );
       } catch (err) {
         aiFail(err);
       } finally {
@@ -229,7 +228,8 @@ export function AtelierApp({ mid }: { mid: string }) {
         }));
         const n = addSuggestions(items) ?? 0;
         if (!res.grounded) toast.warning('Aucune source web trouvée : résultats non vérifiés.');
-        else toast.success(n ? `${n} affirmation${n > 1 ? 's' : ''} vérifiée${n > 1 ? 's' : ''}` : 'Aucune affirmation factuelle à vérifier.');
+        else
+          toast.success(n ? `${n} affirmation${n > 1 ? 's' : ''} vérifiée${n > 1 ? 's' : ''}` : 'Aucune affirmation factuelle à vérifier.');
       } catch (err) {
         aiFail(err);
       } finally {
@@ -415,14 +415,53 @@ export function AtelierApp({ mid }: { mid: string }) {
   };
 
   const actions: PaletteAction[] = [
-    { id: 'dictate', group: 'Écrire', label: dictation.state.phase === 'idle' ? 'Dicter' : 'Terminer la dictée', icon: <Mic />, shortcut: '⌥D', run: toggleDictation, keywords: ['voix', 'micro'] },
+    {
+      id: 'dictate',
+      group: 'Écrire',
+      label: dictation.state.phase === 'idle' ? 'Dicter' : 'Terminer la dictée',
+      icon: <Mic />,
+      shortcut: '⌥D',
+      run: toggleDictation,
+      keywords: ['voix', 'micro'],
+    },
     { id: 'new-chapter', group: 'Écrire', label: 'Nouveau chapitre', icon: <Plus />, run: () => void ws.addChapter() },
     { id: 'footnote', group: 'Écrire', label: 'Insérer une note de bas de page', icon: <NotebookPen />, run: addFootnote },
-    { id: 'focus', group: 'Écrire', label: settings.focusMode ? 'Quitter le mode focus' : 'Mode focus', icon: <Focus />, shortcut: '⌥F', run: () => setSettings((s) => ({ ...s, focusMode: !s.focusMode })) },
-    { id: 'typewriter', group: 'Écrire', label: settings.typewriter ? 'Désactiver la machine à écrire' : 'Mode machine à écrire', icon: <AlignCenterVertical />, run: () => setSettings((s) => ({ ...s, typewriter: !s.typewriter })) },
-    { id: 'analyze-sel', group: 'Assistant IA', label: 'Raturer la sélection', icon: <Sparkles />, run: () => void analyze(selection(), 'selection') },
-    { id: 'analyze', group: 'Assistant IA', label: 'Raturer tout le chapitre', icon: <Sparkles />, run: () => doc && void analyze(docToPlainText(doc), 'chapter') },
-    { id: 'factcheck', group: 'Assistant IA', label: 'Vérifier les faits du chapitre', icon: <ScanSearch />, run: () => doc && void factcheck(docToPlainText(doc)) },
+    {
+      id: 'focus',
+      group: 'Écrire',
+      label: settings.focusMode ? 'Quitter le mode focus' : 'Mode focus',
+      icon: <Focus />,
+      shortcut: '⌥F',
+      run: () => setSettings((s) => ({ ...s, focusMode: !s.focusMode })),
+    },
+    {
+      id: 'typewriter',
+      group: 'Écrire',
+      label: settings.typewriter ? 'Désactiver la machine à écrire' : 'Mode machine à écrire',
+      icon: <AlignCenterVertical />,
+      run: () => setSettings((s) => ({ ...s, typewriter: !s.typewriter })),
+    },
+    {
+      id: 'analyze-sel',
+      group: 'Assistant IA',
+      label: 'Raturer la sélection',
+      icon: <Sparkles />,
+      run: () => void analyze(selection(), 'selection'),
+    },
+    {
+      id: 'analyze',
+      group: 'Assistant IA',
+      label: 'Raturer tout le chapitre',
+      icon: <Sparkles />,
+      run: () => doc && void analyze(docToPlainText(doc), 'chapter'),
+    },
+    {
+      id: 'factcheck',
+      group: 'Assistant IA',
+      label: 'Vérifier les faits du chapitre',
+      icon: <ScanSearch />,
+      run: () => doc && void factcheck(docToPlainText(doc)),
+    },
     { id: 'research', group: 'Assistant IA', label: 'Recherche documentaire', icon: <Globe />, run: () => openTab('research') },
     { id: 'snapshot', group: 'Manuscrit', label: 'Figer une version du chapitre', icon: <Camera />, run: () => openTab('versions') },
     { id: 'read', group: 'Manuscrit', label: 'Ouvrir dans la liseuse', icon: <BookOpen />, run: () => router.push(`/liseuse?m=${mid}`) },
@@ -439,10 +478,9 @@ export function AtelierApp({ mid }: { mid: string }) {
 
   const inspector = active && doc && (
     <div className="flex h-full flex-col">
-      <div className="flex gap-1 px-3 pb-3 pt-3" role="tablist" aria-label="Inspecteur">
+      <div className="flex gap-1 px-3 pt-3 pb-3" role="tablist" aria-label="Inspecteur">
         {TABS.map((t) => {
-          const count =
-            t.id === 'suggestions' ? pendingSuggestions.length : t.id === 'notes' ? active.notes.length : 0;
+          const count = t.id === 'suggestions' ? pendingSuggestions.length : t.id === 'notes' ? active.notes.length : 0;
           return (
             <button
               key={t.id}
@@ -516,7 +554,7 @@ export function AtelierApp({ mid }: { mid: string }) {
       <header
         className={cn(
           'sticky top-0 z-40 flex h-14 items-center gap-2 border-b border-border/70 bg-bg/80 px-3 backdrop-blur-xl transition-opacity sm:px-4',
-          settings.focusMode && 'opacity-0 hover:opacity-100 focus-within:opacity-100',
+          settings.focusMode && 'opacity-0 focus-within:opacity-100 hover:opacity-100',
         )}
       >
         <Link href="/bibliotheque" className="shrink-0 rounded-lg p-1 transition hover:bg-surface-2" aria-label="Bibliothèque">
@@ -529,7 +567,7 @@ export function AtelierApp({ mid }: { mid: string }) {
         >
           <ListTree className="size-4 shrink-0 text-muted lg:hidden" />
           <span className="min-w-0">
-            <span className="block truncate text-[13.5px] font-semibold leading-tight">{ws.manuscript.title}</span>
+            <span className="block truncate text-[13.5px] leading-tight font-semibold">{ws.manuscript.title}</span>
             <span className="block truncate text-xs text-faint lg:hidden">
               {chapterIndex + 1}. {active?.title}
             </span>
@@ -538,7 +576,9 @@ export function AtelierApp({ mid }: { mid: string }) {
         <SaveIndicator status={ws.status} lastSavedAt={ws.lastSavedAt} />
 
         <div className="ml-auto flex items-center gap-1">
-          <Tooltip content={`${formatNumber(today)} / ${formatNumber(goal)} mots aujourd’hui${streak > 1 ? ` · ${streak} jours d’affilée` : ''}`}>
+          <Tooltip
+            content={`${formatNumber(today)} / ${formatNumber(goal)} mots aujourd’hui${streak > 1 ? ` · ${streak} jours d’affilée` : ''}`}
+          >
             <span className="mr-1 hidden items-center gap-2 sm:flex">
               <ProgressRing value={today / goal} size={30} stroke={3} label="Objectif du jour">
                 <span className="text-[9px] font-semibold">{streak > 0 ? streak : ''}</span>
@@ -611,10 +651,10 @@ export function AtelierApp({ mid }: { mid: string }) {
         </aside>
 
         {/* ── Page ── */}
-        <main className="min-w-0 px-5 pb-[45vh] pt-10 sm:px-8 lg:pt-16">
+        <main className="min-w-0 px-5 pt-10 pb-[45vh] sm:px-8 lg:pt-16">
           {active && doc ? (
             <div className="mx-auto max-w-[720px]">
-              <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-faint">
+              <p className="mb-3 font-mono text-[11px] tracking-[0.2em] text-faint uppercase">
                 Chapitre {chapterIndex + 1} · {formatNumber(active.wordCount)} mots
               </p>
               <ChapterTitle
@@ -641,7 +681,11 @@ export function AtelierApp({ mid }: { mid: string }) {
               />
             </div>
           ) : (
-            <EmptyState icon={<ListTree />} title="Aucun chapitre" action={<Button onClick={() => void ws.addChapter()}>Créer un chapitre</Button>} />
+            <EmptyState
+              icon={<ListTree />}
+              title="Aucun chapitre"
+              action={<Button onClick={() => void ws.addChapter()}>Créer un chapitre</Button>}
+            />
           )}
         </main>
 
@@ -656,7 +700,7 @@ export function AtelierApp({ mid }: { mid: string }) {
       {/* ── Dock de dictée ── */}
       <div
         className={cn(
-          'pointer-events-none fixed inset-x-0 z-40 flex justify-center px-4',
+          '@container pointer-events-none fixed inset-x-0 z-40 flex justify-center px-4',
           isDesktop ? 'bottom-7' : 'bottom-[calc(env(safe-area-inset-bottom)+14px)]',
           isDesktop && inspectorVisible && 'lg:pr-[380px] lg:pl-[264px]',
           isDesktop && !inspectorVisible && !settings.focusMode && 'lg:pl-[264px]',
@@ -692,12 +736,12 @@ export function AtelierApp({ mid }: { mid: string }) {
         <>
           <Dialog open={mobileSheet === 'chapters'} onOpenChange={(o) => !o && setMobileSheet(null)}>
             <DialogContent title={ws.manuscript.title} side="left" className="p-0" hideTitle>
-              <div className="-mx-5 -mb-5 -mt-4 h-[calc(100dvh-2rem)]">{sidebar}</div>
+              <div className="-mx-5 -mt-4 -mb-5 h-[calc(100dvh-2rem)]">{sidebar}</div>
             </DialogContent>
           </Dialog>
           <Dialog open={mobileSheet === 'inspector'} onOpenChange={(o) => !o && setMobileSheet(null)}>
             <DialogContent title="Inspecteur" side="bottom" hideTitle className="h-[80dvh]">
-              <div className="-mx-5 -mb-5 -mt-4 h-[calc(80dvh-2rem)]">{inspector}</div>
+              <div className="-mx-5 -mt-4 -mb-5 h-[calc(80dvh-2rem)]">{inspector}</div>
             </DialogContent>
           </Dialog>
         </>
@@ -807,7 +851,7 @@ function ChapterTitle({ value, onChange, onEnter }: { value: string; onChange: (
       aria-label="Titre du chapitre"
       placeholder="Titre du chapitre"
       maxLength={200}
-      className="mb-8 w-full resize-none overflow-hidden bg-transparent font-display text-[clamp(2.2rem,5vw,3.4rem)] leading-[1.05] tracking-[-0.01em] outline-none placeholder:text-faint [field-sizing:content]"
+      className="mb-8 [field-sizing:content] w-full resize-none overflow-hidden bg-transparent font-display text-[clamp(2.2rem,5vw,3.4rem)] leading-[1.05] tracking-[-0.01em] outline-none placeholder:text-faint"
     />
   );
 }
@@ -822,7 +866,11 @@ function SaveIndicator({ status, lastSavedAt }: { status: SaveStatus; lastSavedA
   const s = map[status];
   return (
     <Tooltip content={lastSavedAt ? `Dernière synchronisation ${formatRelative(lastSavedAt)}` : 'Synchronisé avec votre compte'}>
-      <span className="hidden items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-1 text-xs text-muted md:flex" role="status" aria-live="polite">
+      <span
+        className="hidden items-center gap-1.5 rounded-full px-2 py-1 text-xs whitespace-nowrap text-muted md:flex"
+        role="status"
+        aria-live="polite"
+      >
         <span className={cn('size-1.5 rounded-full', s.dot)} />
         {s.label}
       </span>
@@ -830,13 +878,7 @@ function SaveIndicator({ status, lastSavedAt }: { status: SaveStatus; lastSavedA
   );
 }
 
-function DisplaySettings({
-  settings,
-  onChange,
-}: {
-  settings: EditorSettings;
-  onChange: (patch: Partial<EditorSettings>) => void;
-}) {
+function DisplaySettings({ settings, onChange }: { settings: EditorSettings; onChange: (patch: Partial<EditorSettings>) => void }) {
   return (
     <div className="space-y-5 text-sm">
       <div>
@@ -844,7 +886,14 @@ function DisplaySettings({
           <span className="font-medium">Taille du texte</span>
           <span className="text-muted">{settings.fontSize} px</span>
         </div>
-        <Slider min={15} max={26} step={1} value={[settings.fontSize]} onValueChange={([v]) => onChange({ fontSize: v })} aria-label="Taille du texte" />
+        <Slider
+          min={15}
+          max={26}
+          step={1}
+          value={[settings.fontSize]}
+          onValueChange={([v]) => onChange({ fontSize: v })}
+          aria-label="Taille du texte"
+        />
       </div>
       {(
         [
@@ -880,7 +929,8 @@ function MobileBar({
   onPalette: () => void;
   onAnalyze: () => void;
 }) {
-  const item = 'flex h-12 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[10.5px] font-medium text-muted active:bg-surface-2 [&>svg]:size-5';
+  const item =
+    'flex h-12 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl text-[10.5px] font-medium text-muted active:bg-surface-2 [&>svg]:size-5';
   return (
     <nav
       aria-label="Actions"
@@ -902,7 +952,7 @@ function MobileBar({
       </button>
       <button type="button" className={cn(item, 'relative')} onClick={onInspector}>
         <NotebookPen /> Panneau
-        {pending > 0 && <span className="absolute right-3 top-1 rounded-full bg-iris px-1.5 text-[9px] text-white">{pending}</span>}
+        {pending > 0 && <span className="absolute top-1 right-3 rounded-full bg-iris px-1.5 text-[9px] text-white">{pending}</span>}
       </button>
       <button type="button" className={item} onClick={onPalette}>
         <CommandIcon /> Plus
@@ -916,12 +966,12 @@ function AtelierSkeleton() {
     <div className="min-h-dvh" aria-busy="true" aria-label="Chargement de l’atelier">
       <div className="h-14 border-b border-border" />
       <div className="mx-auto max-w-[720px] space-y-4 px-6 pt-20">
-        <div className="skeleton h-3 w-32" />
-        <div className="skeleton h-12 w-2/3" />
-        <div className="skeleton mt-8 h-4 w-full" />
-        <div className="skeleton h-4 w-11/12" />
-        <div className="skeleton h-4 w-full" />
-        <div className="skeleton h-4 w-4/5" />
+        <div className="h-3 w-32 skeleton" />
+        <div className="h-12 w-2/3 skeleton" />
+        <div className="mt-8 h-4 w-full skeleton" />
+        <div className="h-4 w-11/12 skeleton" />
+        <div className="h-4 w-full skeleton" />
+        <div className="h-4 w-4/5 skeleton" />
       </div>
     </div>
   );

@@ -29,7 +29,7 @@ export function DialogContent({ children, title, description, className, side = 
         className={cn(
           'fixed z-50 flex flex-col bg-surface text-text shadow-pop outline-none',
           side === 'center' &&
-            'left-1/2 top-1/2 max-h-[min(88dvh,820px)] w-[min(94vw,560px)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border data-[state=open]:animate-[fade-up_0.25s_var(--ease-out-expo)]',
+            'top-1/2 left-1/2 max-h-[min(88dvh,820px)] w-[min(94vw,560px)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border data-[state=open]:animate-[fade-up_0.25s_var(--ease-out-expo)]',
           side === 'right' &&
             'inset-y-0 right-0 w-[min(100vw,440px)] border-l border-border data-[state=open]:animate-[slide-in-right_0.3s_var(--ease-out-expo)]',
           side === 'left' &&
@@ -49,13 +49,13 @@ export function DialogContent({ children, title, description, className, side = 
             )}
           </div>
           <D.Close
-            className="-mr-1 -mt-1 grid size-9 shrink-0 place-items-center rounded-lg text-muted transition hover:bg-surface-2 hover:text-text"
+            className="-mt-1 -mr-1 grid size-9 shrink-0 place-items-center rounded-lg text-muted transition hover:bg-surface-2 hover:text-text"
             aria-label="Fermer"
           >
             <X className="size-4" />
           </D.Close>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-4 scrollbar-thin">{children}</div>
+        <div className="min-h-0 flex-1 scrollbar-thin overflow-y-auto px-5 pt-4 pb-5">{children}</div>
       </D.Content>
     </D.Portal>
   );

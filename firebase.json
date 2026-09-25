@@ -15,9 +15,7 @@
       "googleSignIn": {
         "oAuthBrandDisplayName": "Atelier d'Écrivain",
         "supportEmail": "support@atelier-ecrivain.app",
-        "authorizedRedirectUris": [
-          "https://atelier-ecrivain.vercel.app/__/auth/handler"
-        ]
+        "authorizedRedirectUris": ["https://atelier-ecrivain.vercel.app/__/auth/handler"]
       }
     }
   }

@@ -34,7 +34,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-flex h-5 items-center gap-1 rounded-full px-2 text-[11px] font-medium leading-none [&>svg]:size-3',
+        'inline-flex h-5 items-center gap-1 rounded-full px-2 text-[11px] leading-none font-medium [&>svg]:size-3',
         badgeTones[tone],
         className,
       )}
@@ -108,9 +108,7 @@ export function EmptyState({
 }) {
   return (
     <div className={cn('flex flex-col items-center px-6 py-12 text-center', className)}>
-      {icon && (
-        <div className="mb-4 grid size-12 place-items-center rounded-2xl bg-surface-2 text-muted [&>svg]:size-5">{icon}</div>
-      )}
+      {icon && <div className="mb-4 grid size-12 place-items-center rounded-2xl bg-surface-2 text-muted [&>svg]:size-5">{icon}</div>}
       <h3 className="font-display text-2xl">{title}</h3>
       {children && <div className="mt-1.5 max-w-sm text-sm text-muted">{children}</div>}
       {action && <div className="mt-5">{action}</div>}

@@ -154,16 +154,34 @@ export function ChapterEditor({
           shouldShow={({ editor: e, from, to }) => from !== to && !e.isActive('noteRef') && e.isEditable}
           className="z-30 flex items-center gap-0.5 rounded-xl border border-border bg-surface p-1 shadow-lift"
         >
-          <BubbleButton label="Gras" shortcut="⌘B" active={editor.isActive('bold')} onClick={() => editor.chain().focus().toggleBold().run()}>
+          <BubbleButton
+            label="Gras"
+            shortcut="⌘B"
+            active={editor.isActive('bold')}
+            onClick={() => editor.chain().focus().toggleBold().run()}
+          >
             <Bold />
           </BubbleButton>
-          <BubbleButton label="Italique" shortcut="⌘I" active={editor.isActive('italic')} onClick={() => editor.chain().focus().toggleItalic().run()}>
+          <BubbleButton
+            label="Italique"
+            shortcut="⌘I"
+            active={editor.isActive('italic')}
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+          >
             <Italic />
           </BubbleButton>
-          <BubbleButton label="Intertitre" active={editor.isActive('heading')} onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+          <BubbleButton
+            label="Intertitre"
+            active={editor.isActive('heading')}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          >
             <Heading2 />
           </BubbleButton>
-          <BubbleButton label="Citation" active={editor.isActive('blockquote')} onClick={() => editor.chain().focus().toggleBlockquote().run()}>
+          <BubbleButton
+            label="Citation"
+            active={editor.isActive('blockquote')}
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          >
             <Quote />
           </BubbleButton>
           <span className="mx-1 h-5 w-px bg-border" />

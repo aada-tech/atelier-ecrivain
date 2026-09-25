@@ -36,7 +36,7 @@ export async function saveBookMeta(uid: string, mid: string, meta: BookMeta) {
   await setDoc(refs.meta(uid, mid, 'book'), {
     metadata: meta.metadata,
     sections: meta.sections,
-    cover: { ...coverRest, imageUrl: isData ? null : imageUrl ?? null },
+    cover: { ...coverRest, imageUrl: isData ? null : (imageUrl ?? null) },
     settings: meta.settings ?? null,
     updatedAt: serverTimestamp(),
   });

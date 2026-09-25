@@ -26,9 +26,7 @@ export async function POST(req: Request) {
     const parsed = analyzeResponse.safeParse(parseJsonLoose(result.text));
     if (!parsed.success) return aiError('bad_output', 'Réponse IA inexploitable, réessayez.', 502);
     // Ne garder que les suggestions qui citent réellement le texte.
-    const suggestions = parsed.data.suggestions.filter(
-      (s) => s.original !== s.replacement && body.text.includes(s.original),
-    );
+    const suggestions = parsed.data.suggestions.filter((s) => s.original !== s.replacement && body.text.includes(s.original));
     return NextResponse.json({ ...parsed.data, suggestions });
   } catch (err) {
     return upstreamFailure(err);

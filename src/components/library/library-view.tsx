@@ -58,7 +58,8 @@ export function LibraryView() {
           <div className="mb-8 flex flex-col gap-3 rounded-2xl border border-iris/30 bg-iris-soft/50 p-4 sm:flex-row sm:items-center">
             <UserRoundPlus className="size-5 shrink-0 text-iris" />
             <p className="flex-1 text-sm">
-              <strong>Compte d’essai.</strong> Vos textes sont enregistrés, mais liés à ce navigateur. Créez un compte pour les retrouver partout.
+              <strong>Compte d’essai.</strong> Vos textes sont enregistrés, mais liés à ce navigateur. Créez un compte pour les retrouver
+              partout.
             </p>
             <Button size="sm" variant="ai" asChild>
               <Link href="/connexion?conversion=1">Garder mes textes</Link>
@@ -68,7 +69,7 @@ export function LibraryView() {
 
         <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-faint">
+            <p className="font-mono text-xs tracking-[0.2em] text-faint uppercase">
               {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
             </p>
             <h1 className="mt-3 font-display text-[clamp(2.4rem,6vw,4rem)] leading-[1.02] tracking-[-0.015em]">
@@ -77,27 +78,35 @@ export function LibraryView() {
 
             {list === null ? (
               <div className="mt-8 flex gap-6">
-                <div className="skeleton aspect-[2/3] w-36" />
+                <div className="aspect-[2/3] w-36 skeleton" />
                 <div className="flex-1 space-y-3 pt-4">
-                  <div className="skeleton h-7 w-2/3" />
-                  <div className="skeleton h-4 w-1/2" />
+                  <div className="h-7 w-2/3 skeleton" />
+                  <div className="h-4 w-1/2 skeleton" />
                 </div>
               </div>
             ) : last ? (
               <article className="mt-8 flex flex-col gap-6 rounded-3xl border border-border bg-surface p-5 shadow-soft sm:flex-row sm:items-center sm:p-6">
-                <Link href={`/atelier?m=${last.id}`} className="mx-auto w-32 shrink-0 transition-transform duration-500 [transform:perspective(800px)_rotateY(-16deg)] hover:[transform:perspective(800px)_rotateY(0)] sm:mx-0" aria-label={`Ouvrir ${last.title}`}>
+                <Link
+                  href={`/atelier?m=${last.id}`}
+                  className="mx-auto w-32 shrink-0 [transform:perspective(800px)_rotateY(-16deg)] transition-transform duration-500 hover:[transform:perspective(800px)_rotateY(0)] sm:mx-0"
+                  aria-label={`Ouvrir ${last.title}`}
+                >
                   <BookCover title={last.title} subtitle={last.subtitle} author={displayName} background={coverFor(last)} volume />
                 </Link>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-medium uppercase tracking-wider text-ember">Reprendre</p>
+                  <p className="text-xs font-medium tracking-wider text-ember uppercase">Reprendre</p>
                   <h2 className="mt-1 truncate font-display text-3xl">{last.title}</h2>
                   <p className="mt-1 text-sm text-muted">
-                    {formatNumber(last.wordCount)} mots · {last.chapterCount} chapitre{last.chapterCount > 1 ? 's' : ''} · modifié {formatRelative(last.updatedAt)}
+                    {formatNumber(last.wordCount)} mots · {last.chapterCount} chapitre{last.chapterCount > 1 ? 's' : ''} · modifié{' '}
+                    {formatRelative(last.updatedAt)}
                   </p>
                   {last.goal?.targetWords ? (
                     <div className="mt-3 flex items-center gap-3 text-xs text-muted">
                       <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-surface-3">
-                        <div className="h-full rounded-full bg-ember" style={{ width: `${Math.min(100, (last.wordCount / last.goal.targetWords) * 100)}%` }} />
+                        <div
+                          className="h-full rounded-full bg-ember"
+                          style={{ width: `${Math.min(100, (last.wordCount / last.goal.targetWords) * 100)}%` }}
+                        />
                       </div>
                       {Math.round((last.wordCount / last.goal.targetWords) * 100)} % de {formatNumber(last.goal.targetWords)}
                     </div>
@@ -125,7 +134,9 @@ export function LibraryView() {
               <div className="mt-8 rounded-3xl border border-dashed border-border-strong p-8 text-center">
                 <Feather className="mx-auto size-8 text-ember" />
                 <h2 className="mt-3 font-display text-3xl">Votre premier livre commence ici</h2>
-                <p className="mx-auto mt-2 max-w-md text-sm text-muted">Partez d’une page blanche, d’une structure, ou importez un texte existant.</p>
+                <p className="mx-auto mt-2 max-w-md text-sm text-muted">
+                  Partez d’une page blanche, d’une structure, ou importez un texte existant.
+                </p>
                 <Button className="mt-5" size="lg" onClick={() => setCreating(true)}>
                   <Plus className="size-4" /> Nouveau manuscrit
                 </Button>
@@ -146,7 +157,7 @@ export function LibraryView() {
                 <Target className="size-4 text-faint" />
               </Stat>
             </div>
-            <h2 className="mb-3 mt-6 text-xs font-medium text-muted">Mots écrits par jour</h2>
+            <h2 className="mt-6 mb-3 text-xs font-medium text-muted">Mots écrits par jour</h2>
             <ActivityChart stats={stats} />
           </aside>
         </section>
@@ -179,7 +190,11 @@ export function LibraryView() {
                   </div>
                   <Menu>
                     <MenuTrigger asChild>
-                      <button type="button" className="grid size-7 place-items-center rounded-md text-faint hover:bg-surface-2 hover:text-text" aria-label={`Actions pour ${m.title}`}>
+                      <button
+                        type="button"
+                        className="grid size-7 place-items-center rounded-md text-faint hover:bg-surface-2 hover:text-text"
+                        aria-label={`Actions pour ${m.title}`}
+                      >
                         <MoreHorizontal className="size-4" />
                       </button>
                     </MenuTrigger>
@@ -251,7 +266,10 @@ export function LibraryView() {
 
       <Dialog open={!!goalFor} onOpenChange={(o) => !o && setGoalFor(null)}>
         {goalFor && (
-          <DialogContent title="Objectif de longueur" description="Un roman fait souvent entre 60 000 et 100 000 mots ; une novella, 20 000 à 40 000.">
+          <DialogContent
+            title="Objectif de longueur"
+            description="Un roman fait souvent entre 60 000 et 100 000 mots ; une novella, 20 000 à 40 000."
+          >
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
@@ -277,7 +295,14 @@ export function LibraryView() {
                   </button>
                 ))}
               </div>
-              <Input name="target" type="number" min={0} step={1000} defaultValue={goalFor.goal?.targetWords ?? 50_000} aria-label="Nombre de mots visé" />
+              <Input
+                name="target"
+                type="number"
+                min={0}
+                step={1000}
+                defaultValue={goalFor.goal?.targetWords ?? 50_000}
+                aria-label="Nombre de mots visé"
+              />
               <div className="flex justify-end gap-2">
                 <Button type="submit">Enregistrer</Button>
               </div>
@@ -288,7 +313,10 @@ export function LibraryView() {
 
       <Dialog open={!!deleting} onOpenChange={(o) => !o && setDeleting(null)}>
         {deleting && (
-          <DialogContent title="Supprimer ce manuscrit ?" description="Tous ses chapitres, notes et versions seront définitivement effacés.">
+          <DialogContent
+            title="Supprimer ce manuscrit ?"
+            description="Tous ses chapitres, notes et versions seront définitivement effacés."
+          >
             <p className="mb-4 rounded-xl bg-danger-soft p-3 text-sm text-danger">
               « {deleting.title} » — {formatNumber(deleting.wordCount)} mots. Pensez à l’exporter avant.
             </p>
@@ -322,7 +350,7 @@ function Stat({ label, value, hint, children }: { label: string; value: string; 
         {label}
         {children}
       </div>
-      <p className="mt-2 text-2xl font-semibold tabular-nums tracking-tight">{value}</p>
+      <p className="mt-2 text-2xl font-semibold tracking-tight tabular-nums">{value}</p>
       <p className="text-[11px] text-faint">{hint}</p>
     </div>
   );
@@ -382,7 +410,10 @@ function NewManuscriptDialog({
                     setImported(null);
                   }}
                   aria-pressed={template === t.id && !imported}
-                  className={cn('rounded-xl border border-border p-3 text-left transition hover:border-border-strong', template === t.id && !imported && 'border-ember bg-ember-soft/40')}
+                  className={cn(
+                    'rounded-xl border border-border p-3 text-left transition hover:border-border-strong',
+                    template === t.id && !imported && 'border-ember bg-ember-soft/40',
+                  )}
                 >
                   <span className="block text-sm font-medium">{t.label}</span>
                   <span className="block text-xs text-muted">{t.description}</span>
@@ -391,12 +422,17 @@ function NewManuscriptDialog({
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className={cn('flex items-center gap-3 rounded-xl border border-dashed border-border-strong p-3 text-left transition hover:bg-surface-2', imported && 'border-ember bg-ember-soft/40')}
+                className={cn(
+                  'flex items-center gap-3 rounded-xl border border-dashed border-border-strong p-3 text-left transition hover:bg-surface-2',
+                  imported && 'border-ember bg-ember-soft/40',
+                )}
               >
                 <Upload className="size-4 shrink-0 text-muted" />
                 <span>
                   <span className="block text-sm font-medium">{imported ? imported.name : 'Importer un texte'}</span>
-                  <span className="block text-xs text-muted">{imported ? `${imported.chapters.length} chapitre(s) détecté(s)` : '.txt ou .md — découpé par chapitres'}</span>
+                  <span className="block text-xs text-muted">
+                    {imported ? `${imported.chapters.length} chapitre(s) détecté(s)` : '.txt ou .md — découpé par chapitres'}
+                  </span>
                 </span>
               </button>
               <input

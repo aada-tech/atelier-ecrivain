@@ -27,10 +27,22 @@ function safeNext(raw: string | null): string {
 export function GoogleIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden>
-      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.76h3.56c2.08-1.92 3.28-4.74 3.28-8.09Z" />
-      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.76c-.99.66-2.25 1.06-3.72 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z" />
-      <path fill="#FBBC05" d="M5.84 14.11A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.44.34-2.11V7.05H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.95l3.66-2.84Z" />
-      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.2 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.05l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38Z" />
+      <path
+        fill="#4285F4"
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.76h3.56c2.08-1.92 3.28-4.74 3.28-8.09Z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.76c-.99.66-2.25 1.06-3.72 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.84 14.11A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.44.34-2.11V7.05H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.95l3.66-2.84Z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.38c1.62 0 3.06.56 4.2 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.05l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38Z"
+      />
     </svg>
   );
 }
@@ -104,8 +116,8 @@ export function LoginView() {
     <div className="grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
       {/* ── Panneau de marque ── */}
       <section data-theme="night" className="relative hidden overflow-hidden bg-bg text-text lg:block">
-        <div className="absolute -left-40 top-1/4 size-[520px] rounded-full bg-ember/30 blur-[120px]" />
-        <div className="absolute -bottom-40 right-0 size-[480px] rounded-full bg-iris/30 blur-[120px]" />
+        <div className="absolute top-1/4 -left-40 size-[520px] rounded-full bg-ember/30 blur-[120px]" />
+        <div className="absolute right-0 -bottom-40 size-[480px] rounded-full bg-iris/30 blur-[120px]" />
         <div className="grain absolute inset-0" />
         <div className="relative flex h-full flex-col justify-between p-12">
           <Link href="/" aria-label="Accueil">
@@ -117,7 +129,9 @@ export function LoginView() {
             </p>
             <footer className="mt-5 text-sm text-muted">Les mots viennent d’abord à voix haute. L’Atelier se charge de l’encre.</footer>
           </blockquote>
-          <p className="text-xs text-faint">Chiffré en transit et au repos · Aucun cookie publicitaire · Données hébergées chez Google Cloud</p>
+          <p className="text-xs text-faint">
+            Chiffré en transit et au repos · Aucun cookie publicitaire · Données hébergées chez Google Cloud
+          </p>
         </div>
       </section>
 
@@ -127,7 +141,9 @@ export function LoginView() {
           <Link href="/" className="mb-10 inline-block lg:hidden">
             <Logo />
           </Link>
-          <h1 className="font-display text-4xl leading-tight">{converting ? 'Gardez vos textes' : needEmail ? 'Confirmez votre adresse' : 'Entrer dans l’Atelier'}</h1>
+          <h1 className="font-display text-4xl leading-tight">
+            {converting ? 'Gardez vos textes' : needEmail ? 'Confirmez votre adresse' : 'Entrer dans l’Atelier'}
+          </h1>
           <p className="mt-2 text-sm text-muted">
             {converting
               ? 'Associez votre essai à un compte : vos manuscrits vous suivront sur tous vos appareils.'
@@ -175,7 +191,7 @@ export function LoginView() {
                   Adresse e-mail
                 </label>
                 <div className="relative">
-                  <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" />
+                  <Mail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-faint" />
                   <Input
                     id="email"
                     type="email"

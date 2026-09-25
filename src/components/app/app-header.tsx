@@ -25,7 +25,10 @@ export function AppHeader() {
               key={l.href}
               href={l.href}
               aria-current={pathname === l.href ? 'page' : undefined}
-              className={cn('rounded-lg px-3 py-1.5 text-sm text-muted transition hover:text-text', pathname === l.href && 'bg-surface-2 text-text')}
+              className={cn(
+                'rounded-lg px-3 py-1.5 text-sm text-muted transition hover:text-text',
+                pathname === l.href && 'bg-surface-2 text-text',
+              )}
             >
               {l.label}
             </Link>

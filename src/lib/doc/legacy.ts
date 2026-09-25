@@ -7,30 +7,48 @@
  * le schéma v2 sans jamais interpréter ce HTML dans un DOM.
  */
 
-import type {
-  BlockNode,
-  Chapter,
-  ChapterStatus,
-  DocNode,
-  InlineNode,
-  Note,
-  Suggestion,
-  SuggestionStatus,
-} from './types';
+import type { BlockNode, Chapter, ChapterStatus, DocNode, InlineNode, Note, Suggestion, SuggestionStatus } from './types';
 import { CURRENT_SCHEMA } from './types';
 import { docWordCount, normalizeDoc } from './text';
 
 const SUPERSCRIPT_TO_DIGIT: Record<string, string> = {
-  '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4',
-  '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
+  '⁰': '0',
+  '¹': '1',
+  '²': '2',
+  '³': '3',
+  '⁴': '4',
+  '⁵': '5',
+  '⁶': '6',
+  '⁷': '7',
+  '⁸': '8',
+  '⁹': '9',
 };
 const SUPERSCRIPT_RE = /[⁰¹²³⁴⁵⁶⁷⁸⁹]+/g;
 
 const ENTITIES: Record<string, string> = {
-  nbsp: ' ', amp: '&', lt: '<', gt: '>', quot: '"', apos: "'",
-  laquo: '«', raquo: '»', hellip: '…', mdash: '—', ndash: '–',
-  rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“', eacute: 'é', egrave: 'è',
-  agrave: 'à', ccedil: 'ç', ecirc: 'ê', ocirc: 'ô', icirc: 'î', ucirc: 'û',
+  nbsp: ' ',
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  apos: "'",
+  laquo: '«',
+  raquo: '»',
+  hellip: '…',
+  mdash: '—',
+  ndash: '–',
+  rsquo: '’',
+  lsquo: '‘',
+  rdquo: '”',
+  ldquo: '“',
+  eacute: 'é',
+  egrave: 'è',
+  agrave: 'à',
+  ccedil: 'ç',
+  ecirc: 'ê',
+  ocirc: 'ô',
+  icirc: 'î',
+  ucirc: 'û',
 };
 
 export function decodeEntities(s: string): string {
@@ -97,7 +115,10 @@ function runsToInline(runs: Run[], resolveNote: (n: number) => string | null): I
     let last = 0;
     for (const match of text.matchAll(SUPERSCRIPT_RE)) {
       const idx = match.index ?? 0;
-      const digits = match[0].split('').map((c) => SUPERSCRIPT_TO_DIGIT[c]).join('');
+      const digits = match[0]
+        .split('')
+        .map((c) => SUPERSCRIPT_TO_DIGIT[c])
+        .join('');
       const noteId = resolveNote(parseInt(digits, 10));
       if (!noteId) continue;
       if (idx > last) out.push(textNode(text.slice(last, idx), run));
@@ -188,11 +209,12 @@ export function chapterFromFirestore(id: string, data: Record<string, unknown>, 
     if (!isMemo) footnoteByNumber.set(legacyNoteNumber(n, footIndex++), noteId);
   });
 
-  const legacyBlocks: LegacyBlock[] = Array.isArray(data.blocks) && data.blocks.length
-    ? (data.blocks as LegacyBlock[])
-    : Array.isArray(data.paragraphs)
-      ? (data.paragraphs as unknown[]).map((p) => ({ content: typeof p === 'string' ? p : '' }))
-      : [];
+  const legacyBlocks: LegacyBlock[] =
+    Array.isArray(data.blocks) && data.blocks.length
+      ? (data.blocks as LegacyBlock[])
+      : Array.isArray(data.paragraphs)
+        ? (data.paragraphs as unknown[]).map((p) => ({ content: typeof p === 'string' ? p : '' }))
+        : [];
 
   const used = new Set<string>();
   const resolveNote = (num: number) => {

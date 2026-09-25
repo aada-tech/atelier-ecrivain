@@ -20,7 +20,6 @@ export function useReadAloud() {
     };
   }, []);
 
-
   const play = useCallback(
     (text: string) => {
       if (!supported) return;
@@ -42,7 +41,8 @@ export function useReadAloud() {
       const synth = window.speechSynthesis;
       const voices = synth.getVoices();
       const voice =
-        voices.find((v) => v.lang.startsWith('fr') && /premium|enhanced|natural|google/i.test(v.name)) ?? voices.find((v) => v.lang.startsWith('fr'));
+        voices.find((v) => v.lang.startsWith('fr') && /premium|enhanced|natural|google/i.test(v.name)) ??
+        voices.find((v) => v.lang.startsWith('fr'));
       const speakNext = () => {
         const next = queue.current.shift();
         if (!next || cancelled.current) {

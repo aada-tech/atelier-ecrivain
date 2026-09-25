@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 export function Slider({ className, 'aria-label': ariaLabel, ...props }: ComponentProps<typeof S.Root>) {
   return (
-    <S.Root className={cn('relative flex h-5 w-full touch-none select-none items-center', className)} {...props}>
+    <S.Root className={cn('relative flex h-5 w-full touch-none items-center select-none', className)} {...props}>
       <S.Track className="relative h-1.5 grow overflow-hidden rounded-full bg-surface-3">
         <S.Range className="absolute h-full bg-ember" />
       </S.Track>

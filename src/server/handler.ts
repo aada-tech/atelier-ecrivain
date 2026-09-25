@@ -40,12 +40,16 @@ export async function guard(req: Request, cost = 1): Promise<AiContext | NextRes
   try {
     user = await verifyFirebaseToken(bearerToken(req));
   } catch (err) {
-    return aiError('unauthenticated', err instanceof AuthError ? 'Session expirée, reconnectez-vous.' : 'Authentification impossible.', 401);
+    return aiError(
+      'unauthenticated',
+      err instanceof AuthError ? 'Session expirée, reconnectez-vous.' : 'Authentification impossible.',
+      401,
+    );
   }
 
   // Clé personnelle (optionnelle) : utilisée pour cette seule requête, jamais stockée ni journalisée.
   const userKey = req.headers.get('x-gemini-key')?.trim();
-  const apiKey = userKey && KEY_RE.test(userKey) ? userKey : process.env.GEMINI_API_KEY ?? '';
+  const apiKey = userKey && KEY_RE.test(userKey) ? userKey : (process.env.GEMINI_API_KEY ?? '');
   if (!apiKey) {
     return aiError('no_key', 'Aucune clé Gemini n’est configurée sur le serveur. Ajoutez votre propre clé dans Compte › IA.', 503);
   }
@@ -84,7 +88,8 @@ export async function parseJson<T>(req: Request, schema: ZodType<T>, maxBytes = 
 
 export function upstreamFailure(err: unknown) {
   if (err instanceof UpstreamError) {
-    if (err.kind === 'quota') return aiError('upstream_quota', 'Le service IA est saturé pour le moment. Réessayez dans une minute.', 503, 60);
+    if (err.kind === 'quota')
+      return aiError('upstream_quota', 'Le service IA est saturé pour le moment. Réessayez dans une minute.', 503, 60);
     if (err.kind === 'blocked') return aiError('upstream_blocked', 'Le fournisseur IA a refusé de traiter ce passage.', 422);
     if (err.kind === 'auth') return aiError('no_key', 'La clé Gemini est invalide ou non autorisée.', 503);
   }

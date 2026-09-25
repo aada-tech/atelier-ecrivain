@@ -33,7 +33,19 @@ interface Ctx {
 
 type PdfStyle = Styles[string];
 
-function T({ token, bold, italic, style, children }: { token: FontToken; bold?: boolean; italic?: boolean; style?: PdfStyle; children: string }) {
+function T({
+  token,
+  bold,
+  italic,
+  style,
+  children,
+}: {
+  token: FontToken;
+  bold?: boolean;
+  italic?: boolean;
+  style?: PdfStyle;
+  children: string;
+}) {
   return <Text style={[face(token, { bold, italic }), style ?? {}]}>{textFor(token, children)}</Text>;
 }
 
@@ -74,7 +86,11 @@ function RunningHead({ ctx }: { ctx: Ctx }) {
         paddingBottom: 3,
       }}
     >
-      {left ? <T token={theme.fonts.folio} italic style={{ fontSize: 7.5, color: theme.colors.accent }}>{left}</T> : null}
+      {left ? (
+        <T token={theme.fonts.folio} italic style={{ fontSize: 7.5, color: theme.colors.accent }}>
+          {left}
+        </T>
+      ) : null}
       <T token={theme.fonts.folio} italic style={{ fontSize: 7.5, color: theme.colors.text, opacity: 0.7 }}>
         {meta.title}
       </T>
@@ -85,7 +101,15 @@ function RunningHead({ ctx }: { ctx: Ctx }) {
 function Folio({ ctx }: { ctx: Ctx }) {
   const { theme } = ctx;
   if (theme.folioStyle === 'none') return null;
-  const base = { position: 'absolute' as const, bottom: 22, left: 42, right: 42, fontSize: 8.5, color: theme.colors.text, ...face(theme.fonts.folio) };
+  const base = {
+    position: 'absolute' as const,
+    bottom: 22,
+    left: 42,
+    right: 42,
+    fontSize: 8.5,
+    color: theme.colors.text,
+    ...face(theme.fonts.folio),
+  };
   if (theme.folioStyle === 'centered') {
     return <Text fixed style={{ ...base, textAlign: 'center' }} render={({ pageNumber }) => `${pageNumber}`} />;
   }
@@ -120,7 +144,10 @@ function Cover({ ctx, cover }: { ctx: Ctx; cover: CoverConfig }) {
       <View style={{ position: 'relative', width: '100%', height: '100%' }}>
         {hasImage ? (
           // eslint-disable-next-line jsx-a11y/alt-text
-          <Image src={image as string} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+          <Image
+            src={image as string}
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+          />
         ) : (
           <PageBackgroundFill value={cover.background?.value || theme.colors.accent} gradientId="cover-bg" />
         )}
@@ -157,7 +184,10 @@ function TitlePage({ ctx }: { ctx: Ctx }) {
         <T token={theme.fonts.body} style={{ fontSize: 11, letterSpacing: 2, color: theme.colors.text }}>
           {(meta.penName || meta.authorName || '').toUpperCase()}
         </T>
-        <T token={theme.fonts.heading} style={{ fontSize: size[0] * 0.052, color: theme.colors.accent, marginTop: 18, textAlign, lineHeight: 1.2 }}>
+        <T
+          token={theme.fonts.heading}
+          style={{ fontSize: size[0] * 0.052, color: theme.colors.accent, marginTop: 18, textAlign, lineHeight: 1.2 }}
+        >
           {meta.title}
         </T>
         {meta.subtitle ? (
@@ -200,7 +230,11 @@ function CopyrightPage({ ctx }: { ctx: Ctx }) {
         </View>
       ) : null}
       {lines.map((l, i) => (
-        <T key={i} token={theme.fonts.body} style={{ fontSize: 8, color: theme.colors.text, marginTop: 5, lineHeight: 1.45, opacity: 0.85 }}>
+        <T
+          key={i}
+          token={theme.fonts.body}
+          style={{ fontSize: 8, color: theme.colors.text, marginTop: 5, lineHeight: 1.45, opacity: 0.85 }}
+        >
           {l}
         </T>
       ))}
@@ -249,7 +283,10 @@ function Section({ ctx, section }: { ctx: Ctx; section: FrontBackMatterSection }
   return (
     <Page size={size} style={pagePadding(ctx)} wrap>
       <RunningHead ctx={ctx} />
-      <T token={theme.fonts.heading} style={{ fontSize: 16, color: theme.colors.text, marginTop: 40, marginBottom: 22, textAlign: 'center' }}>
+      <T
+        token={theme.fonts.heading}
+        style={{ fontSize: 16, color: theme.colors.text, marginTop: 40, marginBottom: 22, textAlign: 'center' }}
+      >
         {section.title}
       </T>
       {section.content
@@ -311,7 +348,10 @@ function ChapterPages({ ctx, chapter, index }: { ctx: Ctx; chapter: PdfChapter; 
             {`CHAPITRE ${index + 1}`}
           </T>
         ) : null}
-        <T token={theme.fonts.heading} style={{ fontSize: page.fontSizePt * 1.75, color: theme.colors.text, textAlign: centered ? 'center' : 'left', lineHeight: 1.25 }}>
+        <T
+          token={theme.fonts.heading}
+          style={{ fontSize: page.fontSizePt * 1.75, color: theme.colors.text, textAlign: centered ? 'center' : 'left', lineHeight: 1.25 }}
+        >
           {chapter.title}
         </T>
         {theme.chapterOpening === 'ornament' && theme.ornamentGlyph ? (
@@ -324,7 +364,11 @@ function ChapterPages({ ctx, chapter, index }: { ctx: Ctx; chapter: PdfChapter; 
       {chapter.blocks.map((b, i) => {
         if (b.type === 'scene-break') {
           return (
-            <T key={i} token="serif" style={{ textAlign: 'center', color: theme.colors.accent, marginVertical: 10, fontSize: page.fontSizePt }}>
+            <T
+              key={i}
+              token="serif"
+              style={{ textAlign: 'center', color: theme.colors.accent, marginVertical: 10, fontSize: page.fontSizePt }}
+            >
               {theme.ornamentGlyph ?? '⁂'}
             </T>
           );
@@ -334,7 +378,10 @@ function ChapterPages({ ctx, chapter, index }: { ctx: Ctx; chapter: PdfChapter; 
             <Text
               key={i}
               minPresenceAhead={40}
-              style={[face(theme.fonts.heading, { bold: true }), { fontSize: page.fontSizePt * (b.type === 'h2' ? 1.25 : 1.05), color: theme.colors.text, marginTop: 14, marginBottom: 8 }]}
+              style={[
+                face(theme.fonts.heading, { bold: true }),
+                { fontSize: page.fontSizePt * (b.type === 'h2' ? 1.25 : 1.05), color: theme.colors.text, marginTop: 14, marginBottom: 8 },
+              ]}
             >
               {runsToText(b.runs, theme.fonts.heading, theme.colors.accent, page.fontSizePt)}
             </Text>
@@ -344,7 +391,11 @@ function ChapterPages({ ctx, chapter, index }: { ctx: Ctx; chapter: PdfChapter; 
           return (
             <Text
               key={i}
-              style={[face(theme.fonts.body, { italic: true }), styles.para, { marginLeft: 22, marginRight: 12, marginVertical: 6, fontSize: page.fontSizePt * 0.95 }]}
+              style={[
+                face(theme.fonts.body, { italic: true }),
+                styles.para,
+                { marginLeft: 22, marginRight: 12, marginVertical: 6, fontSize: page.fontSizePt * 0.95 },
+              ]}
             >
               {runsToText(b.runs, theme.fonts.body, theme.colors.accent, page.fontSizePt)}
             </Text>

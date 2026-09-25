@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  deleteDoc,
-  deleteField,
-  onSnapshot,
-  serverTimestamp,
-  setDoc,
-  writeBatch,
-} from 'firebase/firestore';
+import { deleteDoc, deleteField, onSnapshot, serverTimestamp, setDoc, writeBatch } from 'firebase/firestore';
 import { firestore } from '@/lib/firebase/client';
 import { refs, SESSION_ID } from './refs';
 import { chapterFromFirestore } from '@/lib/doc/legacy';
@@ -23,12 +16,7 @@ export interface ChaptersSnapshot {
   remoteChanged: Set<string>;
 }
 
-export function subscribeChapters(
-  uid: string,
-  mid: string,
-  cb: (s: ChaptersSnapshot) => void,
-  onError?: (e: Error) => void,
-) {
+export function subscribeChapters(uid: string, mid: string, cb: (s: ChaptersSnapshot) => void, onError?: (e: Error) => void) {
   return onSnapshot(
     refs.chapters(uid, mid),
     { includeMetadataChanges: true },
