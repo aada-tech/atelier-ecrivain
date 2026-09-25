@@ -111,7 +111,11 @@ export default function ExportDialog({ open, onOpenChange, uid, manuscript, chap
     setBusy('pdf');
     try {
       const { generatePdf } = await import('@/features/export/services/generatePdf');
-      const blob = await generatePdf(chapters, meta, cover, settings, sections);
+      // Un échec interne du moteur de mise en page peut laisser la promesse en suspens : délai de garde.
+      const blob = await Promise.race([
+        generatePdf(chapters, meta, cover, settings, sections),
+        new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Génération du PDF trop longue')), 180_000)),
+      ]);
       if (pdfUrl) URL.revokeObjectURL(pdfUrl);
       setPdfUrl(URL.createObjectURL(blob));
       download(blob, `${fileBase}.pdf`);
@@ -136,7 +140,6 @@ export default function ExportDialog({ open, onOpenChange, uid, manuscript, chap
         title: meta.title,
         author: meta.penName || meta.authorName,
         subtitle: meta.subtitle,
-        publisher: meta.publisher,
         description: meta.backCoverBlurb,
         coverDataUrl,
       });
@@ -269,29 +272,6 @@ export default function ExportDialog({ open, onOpenChange, uid, manuscript, chap
                       value={meta.penName || meta.authorName}
                       onChange={(e) => setMeta({ ...meta, penName: e.target.value, authorName: e.target.value })}
                       maxLength={120}
-                    />
-                  </Field>
-                  <Field label="Éditeur">
-                    <Input
-                      value={meta.publisher ?? ''}
-                      onChange={(e) => setMeta({ ...meta, publisher: e.target.value })}
-                      placeholder="Auto-édition"
-                      maxLength={120}
-                    />
-                  </Field>
-                  <Field label="ISBN">
-                    <Input
-                      value={meta.isbn ?? ''}
-                      onChange={(e) => setMeta({ ...meta, isbn: e.target.value.replace(/[^0-9Xx-]/g, '') })}
-                      placeholder="978-…"
-                      maxLength={20}
-                    />
-                  </Field>
-                  <Field label="Année">
-                    <Input
-                      type="number"
-                      value={meta.copyrightYear ?? ''}
-                      onChange={(e) => setMeta({ ...meta, copyrightYear: Number(e.target.value) || undefined })}
                     />
                   </Field>
                   <Field label="Dédicace" className="sm:col-span-2">
@@ -727,12 +707,13 @@ export default function ExportDialog({ open, onOpenChange, uid, manuscript, chap
   );
 }
 
+/** Libellé englobant : le champ unique qu'il contient est annoncé avec son nom. */
 function Field({ label, className, children }: { label: string; className?: string; children: React.ReactNode }) {
   return (
-    <div className={className}>
-      <Label>{label}</Label>
+    <label className={cn('block', className)}>
+      <span className="mb-1.5 block text-[13px] font-medium text-muted">{label}</span>
       {children}
-    </div>
+    </label>
   );
 }
 

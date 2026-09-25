@@ -1,5 +1,5 @@
 import React from 'react';
-import { Document, Image, Link, Page, StyleSheet, Text, View, type Styles } from '@react-pdf/renderer';
+import { Document, Image, Link, Page, Path, Polygon, StyleSheet, Svg, Text, View, type Styles } from '@react-pdf/renderer';
 import type { BookMetadata, CoverConfig, FrontBackMatterSection } from '../types/bookMeta';
 import type { ExportSettings, PageFormat } from '../types/exportSettings';
 import type { ExportTheme, FontToken } from '../types/theme';
@@ -47,6 +47,35 @@ function T({
   children: string;
 }) {
   return <Text style={[face(token, { bold, italic }), style ?? {}]}>{textFor(token, children)}</Text>;
+}
+
+const HEART =
+  'M10 18C4.5 13.6 1.5 10.6 1.5 6.8 1.5 3.9 3.7 2 6.1 2 7.9 2 9.2 3 10 4.4 10.8 3 12.1 2 13.9 2 16.3 2 18.5 3.9 18.5 6.8 18.5 10.6 15.5 13.6 10 18Z';
+
+/** Fleurons dessinés (repère 20 × 20) : la police embarquée ne contient pas ces glyphes Unicode. */
+const ORNAMENTS: Record<string, (color: string) => React.ReactNode> = {
+  '❦': (c) => <Path d={HEART} fill={c} />,
+  '❧': (c) => <Path d={HEART} fill={c} transform="rotate(-90 10 10)" />,
+  '✦': (c) => <Path d="M10 0C10.8 6.5 13.5 9.2 20 10 13.5 10.8 10.8 13.5 10 20 9.2 13.5 6.5 10.8 0 10 6.5 9.2 9.2 6.5 10 0Z" fill={c} />,
+  '★': (c) => <Polygon points="10,1 12.4,7.3 19,7.3 13.6,11.4 15.7,18.2 10,14.1 4.3,18.2 6.4,11.4 1,7.3 7.6,7.3" fill={c} />,
+  '❖': (c) =>
+    ['10,0.5 13,5 10,9.5 7,5', '10,10.5 13,15 10,19.5 7,15', '0.5,10 5,7 9.5,10 5,13', '10.5,10 15,7 19.5,10 15,13'].map((points) => (
+      <Polygon key={points} points={points} fill={c} />
+    )),
+};
+
+function Ornament({ glyph, size, color, style }: { glyph?: string; size: number; color: string; style?: PdfStyle }) {
+  const draw = glyph ? ORNAMENTS[glyph] : undefined;
+  if (!draw) {
+    return <Text style={[face('serif'), { fontSize: size, color, textAlign: 'center', letterSpacing: 4 }, style ?? {}]}>{'* * *'}</Text>;
+  }
+  return (
+    <View style={[{ alignItems: 'center' }, style ?? {}]}>
+      <Svg width={size} height={size} viewBox="0 0 20 20">
+        {draw(color)}
+      </Svg>
+    </View>
+  );
 }
 
 function runsToText(runs: Run[], token: FontToken, accent: string, fontSize: number) {
@@ -196,48 +225,22 @@ function TitlePage({ ctx }: { ctx: Ctx }) {
           </T>
         ) : null}
         {theme.ornamentGlyph ? (
-          <T token="serif" style={{ fontSize: 16, color: theme.colors.accent, marginTop: 26 }}>
-            {theme.ornamentGlyph}
-          </T>
+          <Ornament glyph={theme.ornamentGlyph} size={14} color={theme.colors.accent} style={{ marginTop: 26 }} />
         ) : null}
       </View>
-      {meta.publisher ? (
-        <T token={theme.fonts.body} style={{ fontSize: 9.5, color: theme.colors.text, letterSpacing: 1 }}>
-          {meta.publisher}
-        </T>
-      ) : null}
     </Page>
   );
 }
 
-function CopyrightPage({ ctx }: { ctx: Ctx }) {
+function Epigraph({ ctx }: { ctx: Ctx }) {
   const { meta, theme, size } = ctx;
-  const year = meta.copyrightYear || new Date().getFullYear();
-  const lines = [
-    `© ${year} ${meta.penName || meta.authorName}`,
-    meta.isbn ? `ISBN ${meta.isbn}` : '',
-    meta.publisher ? `Édité par ${meta.publisher}` : '',
-    meta.legalNotice ||
-      'Tous droits de traduction, de reproduction et d’adaptation réservés pour tous pays. Le Code de la propriété intellectuelle interdit les copies ou reproductions destinées à une utilisation collective.',
-  ].filter(Boolean);
   return (
-    <Page size={size} style={{ ...pagePadding(ctx), justifyContent: 'flex-end' }}>
-      {meta.epigraph ? (
-        <View style={{ position: 'absolute', top: size[1] * 0.3, left: size[0] * 0.25, right: pagePadding(ctx).paddingRight }}>
-          <T token={theme.fonts.body} italic style={{ fontSize: 10.5, color: theme.colors.text, lineHeight: 1.5 }}>
-            {meta.epigraph}
-          </T>
-        </View>
-      ) : null}
-      {lines.map((l, i) => (
-        <T
-          key={i}
-          token={theme.fonts.body}
-          style={{ fontSize: 8, color: theme.colors.text, marginTop: 5, lineHeight: 1.45, opacity: 0.85 }}
-        >
-          {l}
+    <Page size={size} style={pagePadding(ctx)}>
+      <View style={{ position: 'absolute', top: size[1] * 0.3, left: size[0] * 0.25, right: pagePadding(ctx).paddingRight }}>
+        <T token={theme.fonts.body} italic style={{ fontSize: 10.5, color: theme.colors.text, lineHeight: 1.5 }}>
+          {meta.epigraph ?? ''}
         </T>
-      ))}
+      </View>
     </Page>
   );
 }
@@ -355,22 +358,20 @@ function ChapterPages({ ctx, chapter, index }: { ctx: Ctx; chapter: PdfChapter; 
           {chapter.title}
         </T>
         {theme.chapterOpening === 'ornament' && theme.ornamentGlyph ? (
-          <T token="serif" style={{ fontSize: 13, color: theme.colors.accent, marginTop: 10 }}>
-            {theme.ornamentGlyph}
-          </T>
+          <Ornament glyph={theme.ornamentGlyph} size={11} color={theme.colors.accent} style={{ marginTop: 10 }} />
         ) : null}
       </View>
 
       {chapter.blocks.map((b, i) => {
         if (b.type === 'scene-break') {
           return (
-            <T
+            <Ornament
               key={i}
-              token="serif"
-              style={{ textAlign: 'center', color: theme.colors.accent, marginVertical: 10, fontSize: page.fontSizePt }}
-            >
-              {theme.ornamentGlyph ?? '⁂'}
-            </T>
+              glyph={theme.ornamentGlyph}
+              size={page.fontSizePt * 0.9}
+              color={theme.colors.accent}
+              style={{ marginVertical: 10 }}
+            />
           );
         }
         if (b.type === 'h2' || b.type === 'h3') {
@@ -402,15 +403,23 @@ function ChapterPages({ ctx, chapter, index }: { ctx: Ctx; chapter: PdfChapter; 
           );
         }
         const indent = !firstFlags[i] && page.firstLineIndentMm > 0 ? page.firstLineIndentMm * MM : 0;
-        if (i === openingIndex && theme.chapterOpening === 'drop-cap' && b.runs[0]?.kind === 'text' && b.runs[0].text.length > 1) {
+        if (i === openingIndex && theme.chapterOpening === 'drop-cap' && b.runs[0]?.kind === 'text') {
+          // Ouverture en capitales : une lettrine plus grande que le corps chevauche
+          // les lignes suivantes (le moteur de mise en page ne gère pas l'habillage).
           const [first, ...rest] = b.runs;
           const t = first.kind === 'text' ? first.text : '';
+          const word = t.match(/^\S+/)?.[0] ?? '';
           return (
             <Text key={i} style={[face(theme.fonts.body), styles.para]}>
-              <Text style={[face(theme.fonts.heading, { bold: true }), { fontSize: page.fontSizePt * 2.1, color: theme.colors.accent }]}>
-                {textFor(theme.fonts.heading, t[0])}
+              <Text style={[face(theme.fonts.body, { bold: true }), { color: theme.colors.accent, letterSpacing: 0.8 }]}>
+                {textFor(theme.fonts.body, word.toLocaleUpperCase('fr-FR'))}
               </Text>
-              {runsToText([{ ...first, text: t.slice(1) } as Run, ...rest], theme.fonts.body, theme.colors.accent, page.fontSizePt)}
+              {runsToText(
+                [{ ...first, text: t.slice(word.length) } as Run, ...rest],
+                theme.fonts.body,
+                theme.colors.accent,
+                page.fontSizePt,
+              )}
             </Text>
           );
         }
@@ -493,7 +502,7 @@ export function BookDocument({
     >
       {coverConfig.mode !== 'none' && <Cover ctx={ctx} cover={coverConfig} />}
       <TitlePage ctx={ctx} />
-      <CopyrightPage ctx={ctx} />
+      {metadata.epigraph ? <Epigraph ctx={ctx} /> : null}
       {metadata.dedication ? <Dedication ctx={ctx} /> : null}
       {settings.includeToc && chapters.length > 1 ? <Toc ctx={ctx} chapters={chapters} /> : null}
       {front.map((s) => (

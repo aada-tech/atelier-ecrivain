@@ -31,14 +31,14 @@ le service de reconnaissance vocale du navigateur, ce qui est indiqué dans la p
 
 ## Check-list de l’exploitant
 
-1. Compléter l’identité de l’éditeur, l’adresse, le directeur de la publication et les e-mails de contact dans `src/lib/site.ts`
-   (affichés dans les mentions légales et la politique de confidentialité).
-2. Utiliser une clé Gemini d’un projet **en offre payante** : selon les conditions de Google, les contenus de l’offre gratuite
+L’Atelier est un outil de brouillon : aucune information d’éditeur, d’adresse ni de publication n’est affichée ou demandée
+(pas d’ISBN ni de page de copyright dans les exports). Les pages légales ne nomment que les hébergeurs.
+
+1. Utiliser une clé Gemini d’un projet **en offre payante** : selon les conditions de Google, les contenus de l’offre gratuite
    peuvent servir à améliorer ses produits.
-3. Choisir la région Firestore (de préférence dans l’UE, ex. `eur3`) à la création du projet.
-4. Encadrer les transferts hors UE (Google, Vercel) : clauses contractuelles types / Data Privacy Framework, à mentionner dans la
+2. Choisir la région Firestore (de préférence dans l’UE, ex. `eur3`) à la création du projet.
+3. Encadrer les transferts hors UE (Google, Vercel) : clauses contractuelles types / Data Privacy Framework, à mentionner dans la
    politique de confidentialité.
-5. Tenir le registre des traitements et, le cas échéant, signer les avenants de sous-traitance (DPA) Google Cloud et Vercel.
-6. Comptes anonymes : activer le nettoyage automatique des comptes anonymes inactifs (Identity Platform) ou planifier une purge,
+4. Tenir le registre des traitements et, le cas échéant, signer les avenants de sous-traitance (DPA) Google Cloud et Vercel.
+5. Comptes anonymes : activer le nettoyage automatique des comptes anonymes inactifs (Identity Platform) ou planifier une purge,
    et le mentionner dans la politique de confidentialité.
-7. Désigner un contact pour l’exercice des droits (`privacyEmail`) et répondre sous un mois.

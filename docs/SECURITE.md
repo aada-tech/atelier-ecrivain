@@ -40,7 +40,7 @@
 ## En-têtes HTTP (`next.config.ts`)
 
 Content-Security-Policy (dont `object-src 'none'`, `frame-ancestors 'none'`, `base-uri 'self'`, `form-action 'self'`, pas
-d’`unsafe-eval` en production), HSTS, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`,
+d’`unsafe-eval` en production : seul `'wasm-unsafe-eval'` est permis, pour le moteur de mise en page du PDF), HSTS, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`,
 `Permissions-Policy` (micro limité à notre origine), `Cross-Origin-Opener-Policy: same-origin-allow-popups` (connexion Google).
 Les tests e2e vérifient ces en-têtes.
 

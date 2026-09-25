@@ -102,3 +102,8 @@ Ce registre consigne les choix structurants d'architecture, les conventions tech
 - **Décision tranchée** : Consentement IA versionné et révocable ; export ZIP complet (JSON + Markdown) ; suppression de toutes les données puis du compte ; pages confidentialité, mentions légales, conditions ; purge du cache local à la déconnexion ; aucun traceur tiers. Check-list exploitant dans `docs/RGPD.md`.
 - **Raison** : Droits d'accès, de portabilité et d'effacement exerçables sans intervention manuelle.
 
+### 2026-09-25 | L'Atelier est un outil de brouillon, pas de publication
+- **Problème** : Les pages légales et l'export demandaient des informations d'édition (éditeur, adresse, directeur de la publication, ISBN, année de copyright) sans objet pour un outil de brouillon.
+- **Décision tranchée** : Suppression de ces champs : `SITE` ne garde que l'hébergeur ; plus de section « Éditeur » ni de « Responsable du traitement » nommé ; l'export PDF/EPUB n'a plus ni champs Éditeur/ISBN/Année ni page de copyright (l'épigraphe a sa propre page) ; les anciennes valeurs stockées sont ignorées au chargement.
+- **Raison** : Décision produit : l'auteur n'y publie pas son livre ; les exports servent à relire et partager un manuscrit.
+

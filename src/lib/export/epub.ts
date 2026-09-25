@@ -7,7 +7,6 @@ export interface EpubMeta {
   author: string;
   subtitle?: string;
   language?: string;
-  publisher?: string;
   description?: string;
   /** Image de couverture en data URL (JPEG ou PNG). */
   coverDataUrl?: string;
@@ -135,7 +134,6 @@ export function buildEpub(chapters: Chapter[], meta: EpubMeta): Uint8Array {
 <dc:title>${escapeXml(meta.title)}</dc:title>
 <dc:creator>${escapeXml(meta.author)}</dc:creator>
 <dc:language>${lang}</dc:language>
-${meta.publisher ? `<dc:publisher>${escapeXml(meta.publisher)}</dc:publisher>` : ''}
 ${meta.description ? `<dc:description>${escapeXml(meta.description)}</dc:description>` : ''}
 <meta property="dcterms:modified">${modified}</meta>
 ${coverMeta}

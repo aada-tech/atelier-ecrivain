@@ -38,14 +38,32 @@ export function face(token: FontToken, opts: { bold?: boolean; italic?: boolean 
   return { fontFamily: `${base}${suffix}` };
 }
 
+/** Symboles courants absents des polices embarquées → équivalents lisibles. */
+const SYMBOLS: Record<string, string> = {
+  '⌘': 'Cmd',
+  '⌥': 'Alt',
+  '⇧': 'Maj',
+  '⌃': 'Ctrl',
+  '⏎': 'Entrée',
+  '→': '->',
+  '←': '<-',
+  '⁂': '* * *',
+  '\u202f': '\u00a0',
+};
+const SYMBOL_RE = /[⌘⌥⇧⌃⏎→←⁂\u202f]/g;
+
+/** Tout ce que ne couvre pas le sous-ensemble latin de Literata embarqué (les 4 graisses). */
+const OUTSIDE_LITERATA =
+  /[^\n\t\u0020-\u007e\u00a0-\u00ff\u0102\u0131\u0152\u0153\u02bb\u02bc\u02c6\u02da\u02dc\u0300\u0301\u0303\u0304\u0308\u0309\u0323\u2009\u200b\u2013\u2014\u2018-\u201a\u201c-\u201e\u2022\u2026\u2032\u2033\u2039\u203a\u2044\u20ac\u2122\u2191\u2193\u2212\u2215]/gu;
+
 /**
- * Les polices standard PDF (Helvetica, Courier) se limitent à WinAnsi :
- * on remplace les caractères hors jeu par des équivalents sûrs.
+ * Adapte le texte aux glyphes réellement disponibles : un caractère absent de
+ * la police s'afficherait comme un autre glyphe (ou un carré). Les symboles
+ * courants sont traduits, le reste (emoji…) est retiré. Les polices standard
+ * PDF (Helvetica, Courier) se limitent en plus à WinAnsi.
  */
-export function textFor(token: FontToken, text: string): string {
-  if (token.startsWith('serif')) return text.replace(/ /g, ' ');
-  return text
-    .replace(/[   ]/g, ' ')
-    .replace(/⁂/g, '* * *')
-    .replace(/[^\u0000-ÿŒœŠšŸŽžƒˆ˜–—‘’‚“”„†‡•…‰‹›€™]/g, '');
+export function textFor(token: FontToken, raw: string): string {
+  const text = raw.replace(SYMBOL_RE, (c) => SYMBOLS[c] ?? '');
+  if (token.startsWith('serif')) return text.replace(OUTSIDE_LITERATA, '');
+  return text.replace(/[   ]/g, ' ').replace(/[^\u0000-ÿŒœŠšŸŽžƒˆ˜–—‘’‚“”„†‡•…‰‹›€™]/g, '');
 }

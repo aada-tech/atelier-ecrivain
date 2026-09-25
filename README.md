@@ -55,7 +55,6 @@ L’essai sans compte fonctionne immédiatement ; les fonctions IA demandent une
 2. Variables d’environnement : celles de `.env.example`. `GEMINI_API_KEY` reste **sans** préfixe `NEXT_PUBLIC_`.
 3. Firebase : activer les fournisseurs Google, Lien e-mail et Anonyme ; ajouter le domaine Vercel aux domaines autorisés ;
    déployer les règles : `npx firebase-tools deploy --only firestore:rules,storage`.
-4. Compléter les informations légales dans `src/lib/site.ts` (voir [docs/RGPD.md](docs/RGPD.md)).
 
 ## Documentation
 

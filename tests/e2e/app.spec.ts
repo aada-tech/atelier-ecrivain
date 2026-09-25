@@ -55,6 +55,18 @@ test('écrire, annoter, retrouver son texte @desktop', async ({ page }) => {
   await expect(page.locator('.ProseMirror')).toContainText('Le phare veillait.');
   await expect(page.locator('.ProseMirror sup.note-ref')).toHaveCount(1);
 
+  // Exports : le moteur PDF compile du WebAssembly, que la CSP doit autoriser.
+  await page
+    .getByRole('button', { name: /Exporter/ })
+    .first()
+    .click();
+  const [pdf] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Générer le PDF' }).click()]);
+  expect(pdf.suggestedFilename()).toBe('le-phare.pdf');
+  await page.getByRole('button', { name: 'Liseuse EPUB' }).click();
+  const [epub] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Générer l’EPUB' }).click()]);
+  expect(epub.suggestedFilename()).toBe('le-phare.epub');
+  await page.keyboard.press('Escape');
+
   // Liseuse.
   const mid = new URL(page.url()).searchParams.get('m');
   await page.goto(`/liseuse?m=${mid}`);

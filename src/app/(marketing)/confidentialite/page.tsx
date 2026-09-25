@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function ConfidentialitePage() {
-  const { legal } = SITE;
   return (
     <LegalPage title="Politique de confidentialité" updated="25 septembre 2026">
       <p>
@@ -18,13 +17,7 @@ export default function ConfidentialitePage() {
         pas, nous ne les exploitons pas à des fins publicitaires et nous ne les utilisons pas pour entraîner des modèles d’IA.
       </p>
 
-      <h2>1. Responsable du traitement</h2>
-      <p>
-        {legal.publisher}, {legal.address}. Contact dédié aux données personnelles :{' '}
-        <a href={`mailto:${legal.privacyEmail}`}>{legal.privacyEmail}</a>.
-      </p>
-
-      <h2>2. Données traitées et finalités</h2>
+      <h2>1. Données traitées et finalités</h2>
       <table>
         <thead>
           <tr>
@@ -70,7 +63,7 @@ export default function ConfidentialitePage() {
       </table>
       <p>Nous ne réalisons aucun profilage publicitaire et n’utilisons aucun outil d’analyse d’audience tiers.</p>
 
-      <h2>3. Intelligence artificielle</h2>
+      <h2>2. Intelligence artificielle</h2>
       <ul>
         <li>
           Aucun contenu n’est envoyé à une IA sans votre consentement, donné une fois dans l’application et révocable à tout moment dans
@@ -95,7 +88,7 @@ export default function ConfidentialitePage() {
         </li>
       </ul>
 
-      <h2>4. Destinataires et sous-traitants</h2>
+      <h2>3. Destinataires et sous-traitants</h2>
       <ul>
         <li>
           <strong>Google Ireland Ltd / Google LLC</strong> — Firebase Authentication, Cloud Firestore (hébergement des données) et, si
@@ -110,7 +103,7 @@ export default function ConfidentialitePage() {
         protection des données UE–États-Unis (Data Privacy Framework) et/ou des clauses contractuelles types de la Commission européenne.
       </p>
 
-      <h2>5. Durées de conservation</h2>
+      <h2>4. Durées de conservation</h2>
       <ul>
         <li>Compte et contenus : jusqu’à ce que vous supprimiez votre compte (suppression immédiate et définitive depuis Compte).</li>
         <li>Comptes d’essai sans adresse e-mail : peuvent être supprimés après 12 mois d’inactivité.</li>
@@ -121,7 +114,7 @@ export default function ConfidentialitePage() {
         </li>
       </ul>
 
-      <h2>6. Stockage sur votre appareil</h2>
+      <h2>5. Stockage sur votre appareil</h2>
       <p>
         L’Atelier n’utilise aucun cookie publicitaire ni traceur. Il stocke localement, pour le seul fonctionnement du service que vous
         demandez : la session de connexion, une copie hors ligne de vos manuscrits (effacée à la déconnexion), vos préférences d’affichage
@@ -129,29 +122,28 @@ export default function ConfidentialitePage() {
         consentement.
       </p>
 
-      <h2>7. Sécurité</h2>
+      <h2>6. Sécurité</h2>
       <p>
         Chiffrement en transit (HTTPS/HSTS) et au repos (infrastructure Google Cloud), cloisonnement strict des données par utilisateur au
         niveau de la base, validation de tout contenu, politique de sécurité du contenu (CSP), clé d’IA conservée uniquement côté serveur.
       </p>
 
-      <h2>8. Vos droits</h2>
+      <h2>7. Vos droits</h2>
       <p>
         Vous disposez des droits d’accès, de rectification, d’effacement, de limitation, d’opposition, de portabilité et du droit de retirer
         votre consentement, ainsi que du droit de définir des directives relatives au sort de vos données après votre décès. La plupart
         s’exercent directement dans l’application : <Link href="/compte">Compte</Link> › Mes données (export complet) et Supprimer mon
-        compte. Pour toute autre demande : <a href={`mailto:${legal.privacyEmail}`}>{legal.privacyEmail}</a>. Vous pouvez introduire une
-        réclamation auprès de la{' '}
+        compte. Vous pouvez introduire une réclamation auprès de la{' '}
         <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener noreferrer">
           CNIL
         </a>
         .
       </p>
 
-      <h2>9. Mineurs</h2>
+      <h2>8. Mineurs</h2>
       <p>Le service s’adresse aux personnes de 15 ans et plus. En deçà, l’accord d’un titulaire de l’autorité parentale est requis.</p>
 
-      <h2>10. Modifications</h2>
+      <h2>9. Modifications</h2>
       <p>
         Toute modification substantielle vous sera signalée dans l’application. Si elle concerne les traitements d’IA, votre consentement
         vous sera redemandé.

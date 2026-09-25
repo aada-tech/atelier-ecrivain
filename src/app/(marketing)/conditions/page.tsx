@@ -24,7 +24,7 @@ export default function ConditionsPage() {
 
       <h2>3. Vos textes</h2>
       <p>
-        Vous conservez l’intégralité de vos droits sur vos contenus. Vous accordez à l’éditeur la seule autorisation technique nécessaire
+        Vous conservez l’intégralité de vos droits sur vos contenus. Vous accordez à l’Atelier la seule autorisation technique nécessaire
         pour les héberger, les synchroniser entre vos appareils et, à votre demande, les transmettre aux fonctions d’IA. Cette autorisation
         prend fin avec la suppression des contenus ou du compte.
       </p>
@@ -50,7 +50,7 @@ export default function ConditionsPage() {
 
       <h2>7. Responsabilité</h2>
       <p>
-        L’éditeur ne saurait être tenu responsable des dommages indirects résultant de l’utilisation du service, ni du contenu des textes
+        L’Atelier ne saurait être tenu responsable des dommages indirects résultant de l’utilisation du service, ni du contenu des textes
         rédigés par les utilisateurs.
       </p>
 

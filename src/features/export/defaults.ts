@@ -32,7 +32,7 @@ export const DEFAULT_COVER: CoverConfig = {
 };
 
 export function defaultMetadata(title: string, author: string): BookMetadata {
-  return { title, authorName: author, copyrightYear: new Date().getFullYear() };
+  return { title, authorName: author };
 }
 
 export const COVER_PALETTES: { name: string; value: string; text: string }[] = [

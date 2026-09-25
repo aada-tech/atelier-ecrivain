@@ -94,6 +94,9 @@ test.describe('sécurité', () => {
     const h = res.headers();
     expect(h['content-security-policy']).toContain("frame-ancestors 'none'");
     expect(h['content-security-policy']).toContain("object-src 'none'");
+    // Seule la compilation WebAssembly (moteur PDF) est permise, jamais eval().
+    expect(h['content-security-policy']).toContain("'wasm-unsafe-eval'");
+    expect(h['content-security-policy']).not.toMatch(/'unsafe-eval'/);
     expect(h['x-frame-options']).toBe('DENY');
     expect(h['x-content-type-options']).toBe('nosniff');
     expect(h['permissions-policy']).toContain('microphone=(self)');

@@ -7,11 +7,6 @@ export interface BookMetadata {
   dedication?: string;
   acknowledgments?: string;
   backCoverBlurb?: string;
-  isbn?: string;
-  publisher?: string;
-  publisherLogoUrl?: string;
-  copyrightYear?: number;
-  legalNotice?: string;
   authorBio?: string;
 }
 

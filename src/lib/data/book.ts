@@ -22,8 +22,17 @@ export async function loadBookMeta(uid: string, mid: string): Promise<BookMeta |
   const coverData = cover.exists() ? (cover.data() as { dataUrl?: string }) : undefined;
   const coverConfig = (data.cover ?? { mode: 'none' }) as CoverConfig;
   if (coverData?.dataUrl && coverData.dataUrl.startsWith('data:image/')) coverConfig.imageUrl = coverData.dataUrl;
+  // Champs d'édition de la v1 (éditeur, ISBN…) : l'Atelier est un outil de brouillon, on ne les reprend pas.
+  const {
+    isbn: _isbn,
+    publisher: _publisher,
+    publisherLogoUrl: _logo,
+    copyrightYear: _year,
+    legalNotice: _notice,
+    ...metadata
+  } = (data.metadata ?? {}) as Partial<BookMetadata> & Record<string, unknown>;
   return {
-    metadata: data.metadata ?? {},
+    metadata,
     sections: Array.isArray(data.sections) ? data.sections : [],
     cover: coverConfig,
     settings: data.settings,
