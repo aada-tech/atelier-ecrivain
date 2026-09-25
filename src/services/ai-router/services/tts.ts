@@ -1,0 +1,75 @@
+import { getGeminiAIStudio } from '@/services/ai/geminiClient';
+import { selectModel } from '../router/selectModel';
+import { recordUsage } from '../router/recordUsage';
+
+export interface TTSResponse {
+  audioBlobUrl?: string;
+  degraded: boolean;
+  error?: string;
+}
+
+interface PartWithAudioData {
+  inlineData?: {
+    data?: string;
+    mimeType?: string;
+  };
+}
+
+export async function generateChapterSpeech(text: string): Promise<TTSResponse> {
+  const selection = await selectModel('tts');
+
+  if (!selection.modelId) {
+    return {
+      degraded: true,
+      error: 'Quota de synthèse vocale épuisé pour aujourd’hui.',
+    };
+  }
+
+  try {
+    const genAI = getGeminiAIStudio();
+    const model = genAI.getGenerativeModel({
+      model: selection.modelId,
+      generationConfig: {
+        responseMimeType: 'audio/mp3',
+      } as never,
+    });
+
+    const response = await model.generateContent(`Lisez le texte littéraire suivant à voix haute avec un ton clair, captivant et naturel :\n\n${text.slice(0, 8000)}`);
+    await recordUsage(selection.modelId, 'generation', 'success');
+
+    const candidate = response.response.candidates?.[0];
+    const part = candidate?.content?.parts?.[0] as PartWithAudioData | undefined;
+
+    if (part && part.inlineData && part.inlineData.data) {
+      const base64Audio = part.inlineData.data;
+      const binary = atob(base64Audio);
+      const array = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        array[i] = binary.charCodeAt(i);
+      }
+      const blob = new Blob([array], { type: 'audio/mp3' });
+      return {
+        audioBlobUrl: URL.createObjectURL(blob),
+        degraded: selection.degraded,
+      };
+    }
+
+    return {
+      degraded: true,
+      error: 'Le format audio retourné par le modèle n’est pas lisible.',
+    };
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    if (
+      errMsg.includes('429') ||
+      errMsg.includes('RESOURCE_EXHAUSTED') ||
+      errMsg.includes('Quota exceeded')
+    ) {
+      await recordUsage(selection.modelId, 'generation', 'quota-error');
+    }
+    return {
+      degraded: true,
+      error: 'Synthèse vocale indisponible actuellement.',
+    };
+  }
+}

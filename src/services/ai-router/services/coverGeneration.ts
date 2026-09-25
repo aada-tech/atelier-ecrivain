@@ -1,0 +1,67 @@
+import { getGeminiAIStudio } from '@/services/ai/geminiClient';
+import { selectModel } from '../router/selectModel';
+import { recordUsage } from '../router/recordUsage';
+
+export interface CoverGenResponse {
+  imageUrl?: string;
+  degraded: boolean;
+  error?: string;
+}
+
+interface PartWithInlineData {
+  inlineData?: {
+    data?: string;
+    mimeType?: string;
+  };
+}
+
+export async function generateAICoverImage(prompt: string): Promise<CoverGenResponse> {
+  const selection = await selectModel('cover-generation');
+
+  if (!selection.modelId) {
+    return {
+      degraded: true,
+      error: 'Quota de génération d’images Nano Banana Pro / Imagen épuisé pour la journée.',
+    };
+  }
+
+  try {
+    const genAI = getGeminiAIStudio();
+    const model = genAI.getGenerativeModel({
+      model: selection.modelId,
+    });
+
+    const response = await model.generateContent(`Create a high quality book cover illustration: ${prompt}`);
+    await recordUsage(selection.modelId, 'generation', 'success');
+
+    const candidate = response.response.candidates?.[0];
+    const part = candidate?.content?.parts?.[0] as PartWithInlineData | undefined;
+
+    if (part && part.inlineData && part.inlineData.data) {
+      const base64Img = part.inlineData.data;
+      const mime = part.inlineData.mimeType || 'image/jpeg';
+      return {
+        imageUrl: `data:${mime};base64,${base64Img}`,
+        degraded: selection.degraded,
+      };
+    }
+
+    return {
+      degraded: true,
+      error: 'Aucune image générée retournée par le modèle.',
+    };
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    if (
+      errMsg.includes('429') ||
+      errMsg.includes('RESOURCE_EXHAUSTED') ||
+      errMsg.includes('Quota exceeded')
+    ) {
+      await recordUsage(selection.modelId, 'generation', 'quota-error');
+    }
+    return {
+      degraded: true,
+      error: 'Erreur lors de la génération de la couverture par IA.',
+    };
+  }
+}

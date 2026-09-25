@@ -1,0 +1,257 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { loadStoredManuscript, saveManuscriptToStorage, createInitialState, makeBlock } from '../hooks/useManuscript';
+import { sanitizeFirestoreObject } from '../services/firebase/firestore';
+
+// Mock LocalStorage in Node environment
+class MockLocalStorage {
+  private store: Record<string, string> = {};
+
+  getItem(key: string): string | null {
+    return this.store[key] || null;
+  }
+
+  setItem(key: string, value: string): void {
+    this.store[key] = String(value);
+  }
+
+  removeItem(key: string): void {
+    delete this.store[key];
+  }
+
+  clear(): void {
+    this.store = {};
+  }
+
+  get length(): number {
+    return Object.keys(this.store).length;
+  }
+
+  key(index: number): string | null {
+    const keys = Object.keys(this.store);
+    return keys[index] || null;
+  }
+}
+
+const mockStorage = new MockLocalStorage();
+// @ts-ignore
+globalThis.localStorage = mockStorage;
+// @ts-ignore
+globalThis.window = {
+  dispatchEvent: () => true,
+  localStorage: mockStorage,
+};
+
+test('Multi-Manuscript Cloud & Local Isolation', async (t) => {
+  await t.test('sanitizeFirestoreObject removes all undefined values recursively', () => {
+    const dirty = {
+      title: 'Mon Amour',
+      blocks: [
+        { id: 'b1', content: 'Paragraphe 1', type: 'paragraph', category: undefined, attachedToBlockId: undefined },
+      ],
+      notes: [
+        { id: 'n1', key: 'Note 1', content: 'Note 1', category: 'footnote', attachedToBlockId: undefined },
+      ],
+      pendingReviews: [
+        { id: 'r1', original: 'a', suggestion: 'b', attachedToBlockId: undefined },
+      ],
+      emptyField: undefined,
+      nested: {
+        a: 1,
+        b: undefined,
+      },
+    };
+
+    const clean = sanitizeFirestoreObject(dirty);
+    assert.equal(clean.emptyField, undefined);
+    assert.equal('emptyField' in clean, false);
+    assert.equal('b' in clean.nested, false);
+    assert.equal('category' in clean.blocks[0], false);
+    assert.equal('attachedToBlockId' in clean.notes[0], false);
+    assert.equal('attachedToBlockId' in clean.pendingReviews[0], false);
+  });
+
+  await t.test('prevents cross-manuscript cache leakage when switching manuscripts', () => {
+    const ms1State = createInitialState('ms-book-1');
+    ms1State.chapters[0].title = 'Chapitre 1 — Livre 1';
+    saveManuscriptToStorage('ms-book-1', ms1State);
+
+    const ms2State = createInitialState('ms-book-2');
+    ms2State.chapters = [
+      { id: 'ch1', title: 'Ch 1 — Mon Amour', blocks: [{ id: 'b1', content: 'Chapitre 1 de Mon Amour', type: 'paragraph', source: 'manual', createdAt: Date.now() }], notes: [], pendingReviews: [] },
+      { id: 'ch2', title: 'Ch 2 — Mon Amour', blocks: [{ id: 'b2', content: 'Chapitre 2 de Mon Amour', type: 'paragraph', source: 'manual', createdAt: Date.now() }], notes: [], pendingReviews: [] },
+      { id: 'ch3', title: 'Ch 3 — Mon Amour', blocks: [{ id: 'b3', content: 'Chapitre 3 de Mon Amour', type: 'paragraph', source: 'manual', createdAt: Date.now() }], notes: [], pendingReviews: [] },
+      { id: 'ch4', title: 'Ch 4 — Mon Amour', blocks: [{ id: 'b4', content: 'Chapitre 4 de Mon Amour', type: 'paragraph', source: 'manual', createdAt: Date.now() }], notes: [], pendingReviews: [] },
+      { id: 'ch5', title: 'Ch 5 — Mon Amour', blocks: [{ id: 'b5', content: 'Chapitre 5 de Mon Amour', type: 'paragraph', source: 'manual', createdAt: Date.now() }], notes: [], pendingReviews: [] },
+      { id: 'ch6', title: 'Ch 6 — Mon Amour', blocks: [{ id: 'b6', content: 'Chapitre 6 de Mon Amour', type: 'paragraph', source: 'manual', createdAt: Date.now() }], notes: [], pendingReviews: [] },
+      { id: 'ch7', title: 'Ch 7 — Mon Amour', blocks: [{ id: 'b7', content: 'Chapitre 7 de Mon Amour', type: 'paragraph', source: 'manual', createdAt: Date.now() }], notes: [], pendingReviews: [] },
+    ];
+    saveManuscriptToStorage('ms-book-2', ms2State);
+
+    // Load specifically ms-book-1
+    const loaded1 = loadStoredManuscript('ms-book-1');
+    assert.ok(loaded1);
+    assert.equal(loaded1.chapters[0].title, 'Chapitre 1 — Livre 1');
+
+    // Load specifically ms-book-2 (Mon Amour)
+    const loaded2 = loadStoredManuscript('ms-book-2');
+    assert.ok(loaded2);
+    assert.equal(loaded2.chapters.length, 7, 'Mon Amour must retain exactly its 7 chapters without cross-over');
+    assert.equal(loaded2.chapters[6].title, 'Ch 7 — Mon Amour');
+  });
+
+  await t.test('initial state and freshly loaded states are strictly not dirty', () => {
+    const initialState = createInitialState('new-mobile-client');
+    assert.equal(initialState.isDirty, false, 'New mobile client must not be marked dirty before user types');
+  });
+
+  await t.test('simulates mobile client loading 7 cloud chapters on clean cache without losing chapters', () => {
+    // Simulate cleared cache on mobile
+    mockStorage.clear();
+
+    // Manuscript "Mon Amour" (ms-mon-amour) has 7 chapters in cloud
+    const cloudChapters = [
+      { id: 'ch-1', title: 'Ch 1 — Le Renouveau', blocks: [{ id: 'b-1', content: 'Paragraphe 1', type: 'paragraph' as const, source: 'manual' as const, createdAt: 100 }], notes: [], pendingReviews: [] },
+      { id: 'ch-2', title: 'Ch 2 — L’Aurore', blocks: [{ id: 'b-2', content: 'Paragraphe 2', type: 'paragraph' as const, source: 'manual' as const, createdAt: 100 }], notes: [], pendingReviews: [] },
+      { id: 'ch-3', title: 'Ch 3 — Les Silences', blocks: [{ id: 'b-3', content: 'Paragraphe 3', type: 'paragraph' as const, source: 'manual' as const, createdAt: 100 }], notes: [], pendingReviews: [] },
+      { id: 'ch-4', title: 'Ch 4 — L’Écoute', blocks: [{ id: 'b-4', content: 'Paragraphe 4', type: 'paragraph' as const, source: 'manual' as const, createdAt: 100 }], notes: [], pendingReviews: [] },
+      { id: 'ch-5', title: 'Ch 5 — Le Regard', blocks: [{ id: 'b-5', content: 'Paragraphe 5', type: 'paragraph' as const, source: 'manual' as const, createdAt: 100 }], notes: [], pendingReviews: [] },
+      { id: 'ch-6', title: 'Ch 6 — L’Union', blocks: [{ id: 'b-6', content: 'Paragraphe 6', type: 'paragraph' as const, source: 'manual' as const, createdAt: 100 }], notes: [], pendingReviews: [] },
+      { id: 'ch-7', title: 'Ch 7 — Mon Amour', blocks: [{ id: 'b-7', content: 'Paragraphe 7', type: 'paragraph' as const, source: 'manual' as const, createdAt: 100 }], notes: [], pendingReviews: [] },
+    ];
+
+    // On mobile load with clean cache:
+    const initialMobileState = createInitialState('ms-mon-amour');
+    assert.equal(initialMobileState.chapters.length, 1);
+    assert.equal(initialMobileState.isDirty, false);
+
+    // When cloud chapters arrive, they populate state and persist to local storage
+    const cloudSyncState = {
+      ...initialMobileState,
+      chapters: cloudChapters,
+      lastSaved: Date.now(),
+      lastCloudSync: Date.now(),
+      saveStatus: 'synced' as const,
+    };
+    saveManuscriptToStorage('ms-mon-amour', cloudSyncState);
+
+    // Next read from local storage on mobile returns all 7 chapters
+    const restoredMobile = loadStoredManuscript('ms-mon-amour');
+    assert.ok(restoredMobile);
+    assert.equal(restoredMobile.chapters.length, 7);
+    assert.equal(restoredMobile.chapters[6].title, 'Ch 7 — Mon Amour');
+  });
+
+  await t.test('chapter ordering in memory sorts correctly even when some docs have missing order field', () => {
+    const rawDocs = [
+      { id: 'ch-3', title: 'Chapitre 3', order: 2 },
+      { id: 'ch-1', title: 'Chapitre 1', order: 0 },
+      { id: 'ch-2', title: 'Chapitre 2', order: 1 },
+      { id: 'ch-legacy', title: 'Chapitre Ancien' }, // Missing order field
+    ];
+
+    const sorted = [...rawDocs].sort((a, b) => {
+      const orderA = typeof a.order === 'number' ? a.order : 9999;
+      const orderB = typeof b.order === 'number' ? b.order : 9999;
+      if (orderA !== orderB) return orderA - orderB;
+      return (a.id || '').localeCompare(b.id || '');
+    });
+
+    assert.equal(sorted[0].id, 'ch-1');
+    assert.equal(sorted[1].id, 'ch-2');
+    assert.equal(sorted[2].id, 'ch-3');
+    assert.equal(sorted[3].id, 'ch-legacy');
+  });
+
+  await t.test('cached user and active manuscript persist across mobile page refreshes', async () => {
+    const { getCachedUser, setCachedUser, clearCachedUser } = await import('../services/firebase/auth');
+    
+    // Set user upon sign in
+    setCachedUser({
+      uid: 'writer-user-123',
+      displayName: 'Richard',
+      email: 'richard@ecrivain.fr',
+    } as any);
+
+    // Verify synchronous retrieval on next load / refresh
+    const cached = getCachedUser();
+    assert.ok(cached);
+    assert.equal(cached.uid, 'writer-user-123');
+    assert.equal(cached.displayName, 'Richard');
+
+    // Clean up
+    clearCachedUser();
+    assert.equal(getCachedUser(), null);
+  });
+
+  await t.test('resolveActiveManuscript prioritizes real user book over untitled ghost duplicate', async () => {
+    const { resolveActiveManuscript } = await import('../components/Auth/AuthProvider');
+    
+    const manuscriptsList = [
+      { id: 'ms-ghost', title: 'Sans titre', chapterCount: 4, createdAt: 100 },
+      { id: 'ms-mon-amour', title: 'Mon amour avec un grand A', chapterCount: 7, createdAt: 200 },
+    ] as any;
+
+    // Even if ghost id was in preferredId or first in list, resolveActiveManuscript picks the real book
+    const active = resolveActiveManuscript(manuscriptsList, 'ms-ghost');
+    assert.ok(active);
+    assert.equal(active.id, 'ms-mon-amour');
+    assert.equal(active.title, 'Mon amour avec un grand A');
+  });
+
+  await t.test('deduplicateChapterList eliminates duplicate chapters 1..4 while preserving all real chapters', async () => {
+    const { deduplicateChapterList } = await import('../services/firebase/firestore');
+
+    // Simulate the exact mobile bug state: 8 chapters where chapters 1 to 4 are duplicated
+    // due to ID alias mismatch (ch-1 vs ch-static-1) and duplicate sync
+    const duplicatedChapters = [
+      { id: 'ch-1', title: 'Chapitre 1 — Les dieux à l\'image des hommes', order: 0, blocks: [{ id: 'b1', content: 'Paragraphe 1 complet avec du texte.' }] },
+      { id: 'ch-static-1', title: 'Chapitre 1 — Les dieux à l\'image des hommes', order: 0, blocks: [{ id: 'b1-s', content: 'Paragraphe 1' }] },
+      { id: 'ch-2', title: 'Chapitre 2 — La morale à géométrie variable', order: 1, blocks: [{ id: 'b2', content: 'Texte chapitre 2' }] },
+      { id: 'ch-static-2', title: 'Chapitre 2 — La morale à géométrie variable', order: 1, blocks: [{ id: 'b2-s', content: 'Texte chapitre 2' }] },
+      { id: 'ch-3', title: 'Chapitre 3 — L\'argument moral des athées', order: 2, blocks: [{ id: 'b3', content: 'Texte chapitre 3' }] },
+      { id: 'ch-static-3', title: 'Chapitre 3 — L\'argument moral des athées', order: 2, blocks: [{ id: 'b3-s', content: 'Texte chapitre 3' }] },
+      { id: 'ch-4', title: 'Chapitre 4 — La vraie spiritualité', order: 3, blocks: [{ id: 'b4', content: 'Texte chapitre 4' }] },
+      { id: 'ch-static-4', title: 'Chapitre 4 — La vraie spiritualité', order: 3, blocks: [{ id: 'b4-s', content: 'Texte chapitre 4' }] },
+    ];
+
+    const { deduplicated, duplicateIds } = deduplicateChapterList(duplicatedChapters);
+
+    // Must be exactly 4 clean chapters!
+    assert.equal(deduplicated.length, 4);
+    assert.equal(deduplicated[0].id, 'ch-1');
+    assert.equal(deduplicated[0].order, 0);
+    assert.equal(deduplicated[1].id, 'ch-2');
+    assert.equal(deduplicated[1].order, 1);
+    assert.equal(deduplicated[2].id, 'ch-3');
+    assert.equal(deduplicated[2].order, 2);
+    assert.equal(deduplicated[3].id, 'ch-4');
+    assert.equal(deduplicated[3].order, 3);
+
+    // Kept the richer version of chapter 1
+    assert.equal(deduplicated[0].blocks[0].content, 'Paragraphe 1 complet avec du texte.');
+
+    // Exactly 4 duplicate IDs marked for deletion from Firestore
+    assert.equal(duplicateIds.length, 4);
+    assert.deepEqual(duplicateIds, ['ch-static-1', 'ch-static-2', 'ch-static-3', 'ch-static-4']);
+  });
+
+  await t.test('deduplicateChapterList preserves 7 distinct chapters without false positives', async () => {
+    const { deduplicateChapterList } = await import('../services/firebase/firestore');
+
+    const sevenChapters = [
+      { id: 'ch-1', title: 'Chapitre 1 — Le Début', order: 0, blocks: [{ content: 'Intro' }] },
+      { id: 'ch-2', title: 'Chapitre 2 — La Rencontre', order: 1, blocks: [{ content: 'Suite' }] },
+      { id: 'ch-3', title: 'Chapitre 3 — Le Doute', order: 2, blocks: [{ content: 'Doute' }] },
+      { id: 'ch-4', title: 'Chapitre 4 — L\'Eveil', order: 3, blocks: [{ content: 'Eveil' }] },
+      { id: 'ch-5', title: 'Chapitre 5 — Le Choix', order: 4, blocks: [{ content: 'Choix' }] },
+      { id: 'ch-6', title: 'Chapitre 6 — L\'Epreuve', order: 5, blocks: [{ content: 'Epreuve' }] },
+      { id: 'ch-7', title: 'Chapitre 7 — La Paix', order: 6, blocks: [{ content: 'Conclusion' }] },
+    ];
+
+    const { deduplicated, duplicateIds } = deduplicateChapterList(sevenChapters);
+
+    assert.equal(deduplicated.length, 7);
+    assert.equal(duplicateIds.length, 0);
+  });
+});
