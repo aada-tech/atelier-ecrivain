@@ -32,5 +32,5 @@ export interface CoverConfig {
   fontFamily?: string;
   illustrationUrl?: string;
   hideTextOverlay?: boolean; // Toggles whether title/subtitle/author text is rendered over background
-  aiGeneration?: { prompt: string; provider: 'imagen-4' | 'procedural-fallback' } | null;
+  aiGeneration?: { prompt: string; style?: string } | null;
 }

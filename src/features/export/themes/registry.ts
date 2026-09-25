@@ -5,7 +5,7 @@ export const THEME_REGISTRY: Record<ThemeId, ExportTheme> = {
   classique: {
     id: 'classique',
     label: 'Roman Classique',
-    fonts: { heading: 'Times-Roman', body: 'Times-Roman', folio: 'Times-Roman' },
+    fonts: { heading: 'serif', body: 'serif', folio: 'serif' },
     colors: { text: '#1a1a1a', accent: '#8a5a34', ruleLine: '#d1c7bd' },
     chapterOpening: 'drop-cap',
     headerStyle: 'author-title-alternating',
@@ -16,7 +16,7 @@ export const THEME_REGISTRY: Record<ThemeId, ExportTheme> = {
   fantasy: {
     id: 'fantasy',
     label: 'Fantasy & Imaginaire',
-    fonts: { heading: 'Times-Bold', body: 'Times-Roman', folio: 'Times-Roman' },
+    fonts: { heading: 'serif-bold', body: 'serif', folio: 'serif' },
     colors: { text: '#111827', accent: '#4c1d95', ruleLine: '#8b5cf6' },
     chapterOpening: 'ornament',
     headerStyle: 'author-title-alternating',
@@ -27,7 +27,7 @@ export const THEME_REGISTRY: Record<ThemeId, ExportTheme> = {
   sf: {
     id: 'sf',
     label: 'Science-Fiction',
-    fonts: { heading: 'Helvetica-Bold', body: 'Helvetica', folio: 'Helvetica' },
+    fonts: { heading: 'sans-bold', body: 'sans', folio: 'sans' },
     colors: { text: '#0f172a', accent: '#0284c7', ruleLine: '#38bdf8' },
     chapterOpening: 'centered-number',
     headerStyle: 'title-only',
@@ -38,7 +38,7 @@ export const THEME_REGISTRY: Record<ThemeId, ExportTheme> = {
   polar: {
     id: 'polar',
     label: 'Polar / Noir',
-    fonts: { heading: 'Courier-Bold', body: 'Times-Roman', folio: 'Courier' },
+    fonts: { heading: 'mono-bold', body: 'serif', folio: 'mono' },
     colors: { text: '#18181b', accent: '#dc2626', ruleLine: '#ef4444' },
     chapterOpening: 'plain',
     headerStyle: 'title-only',
@@ -48,7 +48,7 @@ export const THEME_REGISTRY: Record<ThemeId, ExportTheme> = {
   thriller: {
     id: 'thriller',
     label: 'Thriller Psychologique',
-    fonts: { heading: 'Helvetica-Bold', body: 'Helvetica', folio: 'Helvetica' },
+    fonts: { heading: 'sans-bold', body: 'sans', folio: 'sans' },
     colors: { text: '#09090b', accent: '#b91c1c', ruleLine: '#71717a' },
     chapterOpening: 'centered-number',
     headerStyle: 'author-title-alternating',
@@ -58,7 +58,7 @@ export const THEME_REGISTRY: Record<ThemeId, ExportTheme> = {
   essai: {
     id: 'essai',
     label: 'Essai / Réflexion',
-    fonts: { heading: 'Times-Bold', body: 'Times-Roman', folio: 'Times-Roman' },
+    fonts: { heading: 'serif-bold', body: 'serif', folio: 'serif' },
     colors: { text: '#1c1917', accent: '#9a3412', ruleLine: '#c2410c' },
     chapterOpening: 'plain',
     headerStyle: 'author-title-alternating',
@@ -68,7 +68,7 @@ export const THEME_REGISTRY: Record<ThemeId, ExportTheme> = {
   biographie: {
     id: 'biographie',
     label: 'Mémoires / Biographie',
-    fonts: { heading: 'Times-Bold', body: 'Times-Roman', folio: 'Times-Roman' },
+    fonts: { heading: 'serif-bold', body: 'serif', folio: 'serif' },
     colors: { text: '#27272a', accent: '#047857', ruleLine: '#10b981' },
     chapterOpening: 'drop-cap',
     headerStyle: 'author-title-alternating',
@@ -79,7 +79,7 @@ export const THEME_REGISTRY: Record<ThemeId, ExportTheme> = {
   jeunesse: {
     id: 'jeunesse',
     label: 'Jeunesse / Aventure',
-    fonts: { heading: 'Helvetica-Bold', body: 'Helvetica', folio: 'Helvetica' },
+    fonts: { heading: 'sans-bold', body: 'sans', folio: 'sans' },
     colors: { text: '#1e293b', accent: '#ea580c', ruleLine: '#f97316' },
     chapterOpening: 'ornament',
     headerStyle: 'title-only',
@@ -90,7 +90,7 @@ export const THEME_REGISTRY: Record<ThemeId, ExportTheme> = {
   minimaliste: {
     id: 'minimaliste',
     label: 'Minimaliste Épuré',
-    fonts: { heading: 'Helvetica', body: 'Helvetica', folio: 'Helvetica' },
+    fonts: { heading: 'sans', body: 'sans', folio: 'sans' },
     colors: { text: '#262626', accent: '#525252', ruleLine: '#a3a3a3' },
     chapterOpening: 'plain',
     headerStyle: 'none',
@@ -100,7 +100,7 @@ export const THEME_REGISTRY: Record<ThemeId, ExportTheme> = {
   prestige: {
     id: 'prestige',
     label: 'Édition Prestige',
-    fonts: { heading: 'Times-Bold', body: 'Times-Roman', folio: 'Times-Roman' },
+    fonts: { heading: 'serif-bold', body: 'serif', folio: 'serif' },
     colors: { text: '#1a100c', accent: '#b45309', ruleLine: '#f59e0b' },
     chapterOpening: 'drop-cap',
     headerStyle: 'author-title-alternating',

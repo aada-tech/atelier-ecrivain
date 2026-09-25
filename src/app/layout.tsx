@@ -1,59 +1,45 @@
-import type { Metadata, Viewport } from "next";
-import ThemeProvider from "@/components/Shared/ThemeProvider";
-import Navbar from "@/components/Shared/Navbar";
-import AuthProvider from "@/components/Auth/AuthProvider";
-import "./globals.css";
-
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  interactiveWidget: "resizes-content",
-};
+import type { Metadata, Viewport } from 'next';
+import { fontVariables } from './fonts';
+import { themeInitScript } from '@/components/providers/theme-provider';
+import { SITE } from '@/lib/site';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "L'Atelier de l'Écrivain",
-  description:
-    "Atelier d'écriture numérique avec dictée vocale intelligente, structuration IA et liseuse intégrée.",
-  keywords: ["écrivain", "manuscrit", "liseuse", "dictée", "IA", "Gemini"],
-  authors: [{ name: "Richard" }],
-  openGraph: {
-    title: "L'Atelier de l'Écrivain",
-    description:
-      "Dictez votre manuscrit, l'IA transcrit, structure, et vérifie vos citations.",
-    type: "website",
+  metadataBase: new URL(SITE.url),
+  title: {
+    default: `${SITE.name} — ${SITE.tagline}`,
+    template: `%s · ${SITE.name}`,
   },
+  description: SITE.description,
+  applicationName: SITE.name,
+  keywords: ['écriture', 'roman', 'manuscrit', 'dictée vocale', 'écrivain', 'IA', 'liseuse', 'PDF', 'EPUB', 'auto-édition'],
+  authors: [{ name: SITE.name }],
+  openGraph: {
+    type: 'website',
+    locale: 'fr_FR',
+    siteName: SITE.name,
+    title: `${SITE.name} — ${SITE.tagline}`,
+    description: SITE.description,
+  },
+  twitter: { card: 'summary_large_image', title: SITE.name, description: SITE.description },
+  formatDetection: { telephone: false, email: false, address: false },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+  interactiveWidget: 'resizes-content',
+  themeColor: '#0b0b10',
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr">
+    <html lang="fr" className={fontVariables} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600;1,8..60,700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body>
-        <ThemeProvider>
-          <AuthProvider>
-            <div className="app-layout">
-              <Navbar />
-              {children}
-            </div>
-          </AuthProvider>
-        </ThemeProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

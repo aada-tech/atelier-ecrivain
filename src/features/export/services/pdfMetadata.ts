@@ -1,19 +1,13 @@
 import { PDFDocument } from 'pdf-lib';
-import { BookMetadata } from '../types/bookMeta';
+import type { BookMetadata } from '../types/bookMeta';
 
-export async function enrichPdfMetadata(
-  pdfBuffer: ArrayBuffer,
-  metadata: BookMetadata
-): Promise<Uint8Array> {
-  const pdfDoc = await PDFDocument.load(pdfBuffer);
-  pdfDoc.setTitle(metadata.title);
-  pdfDoc.setAuthor(metadata.authorName);
-  pdfDoc.setProducer("L'Atelier de l'Écrivain");
-  pdfDoc.setCreator("L'Atelier de l'Écrivain Studio PDF");
-
-  if (metadata.subtitle) {
-    pdfDoc.setSubject(metadata.subtitle);
-  }
-
-  return await pdfDoc.save();
+export async function enrichPdfMetadata(pdfBuffer: ArrayBuffer, metadata: BookMetadata): Promise<Uint8Array> {
+  const doc = await PDFDocument.load(pdfBuffer);
+  doc.setTitle(metadata.title);
+  doc.setAuthor(metadata.penName || metadata.authorName);
+  doc.setProducer('Atelier');
+  doc.setCreator('Atelier — L’Atelier de l’Écrivain');
+  doc.setLanguage('fr-FR');
+  if (metadata.subtitle) doc.setSubject(metadata.subtitle);
+  return doc.save();
 }
