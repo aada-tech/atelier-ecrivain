@@ -8,6 +8,7 @@ const isDev = process.env.NODE_ENV !== 'production';
  * explicitement aux sources de frames.
  */
 const authDomain = process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN;
+const emulators = process.env.NEXT_PUBLIC_USE_EMULATORS === '1' ? ' http://127.0.0.1:9099 http://127.0.0.1:8080 ws://127.0.0.1:*' : '';
 
 const csp = [
   `default-src 'self'`,
@@ -18,7 +19,7 @@ const csp = [
   `img-src 'self' data: blob: https://lh3.googleusercontent.com https://firebasestorage.googleapis.com`,
   `font-src 'self' data:`,
   `media-src 'self' blob: data:`,
-  `connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google.com${isDev ? ' ws://localhost:* http://localhost:*' : ''}`,
+  `connect-src 'self' https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://www.google.com${isDev ? ' ws://localhost:* http://localhost:*' : ''}${emulators}`,
   `frame-src 'self' https://*.firebaseapp.com https://www.google.com https://recaptcha.google.com${authDomain ? ` https://${authDomain}` : ''}`,
   `worker-src 'self' blob:`,
   `manifest-src 'self'`,
@@ -26,7 +27,7 @@ const csp = [
   `base-uri 'self'`,
   `form-action 'self'`,
   `frame-ancestors 'none'`,
-  isDev ? '' : 'upgrade-insecure-requests',
+  isDev || emulators ? '' : 'upgrade-insecure-requests',
 ]
   .filter(Boolean)
   .join('; ');

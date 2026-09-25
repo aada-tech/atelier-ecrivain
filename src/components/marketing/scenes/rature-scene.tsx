@@ -16,7 +16,7 @@ export const DEMO_RATURE: Suggestion = {
   kind: 'style',
   original: 'très très lentement le long de la jetée sombre et obscure',
   replacement: 'lentement le long de la jetée obscure',
-  explanation: 'Répétition (« très très ») et pléonasme (« sombre et obscure ») : la phrase gagne en rythme.',
+  explanation: 'Répétition (« très très ») et pléonasme (« sombre et obscure ») : la phrase gagne en rythme.',
   status: 'pending',
   createdAt: 0,
 };

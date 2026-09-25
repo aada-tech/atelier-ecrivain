@@ -337,7 +337,7 @@ export function AtelierApp({ mid }: { mid: string }) {
     else void dictation.stop();
   }, [dictation, startDictation]);
 
-  // Lien profond « Dictée instantanée » depuis la bibliothèque.
+  // Lien profond « Dictée instantanée » depuis la bibliothèque.
   const autoStarted = useRef(false);
   useEffect(() => {
     if (!editor || autoStarted.current || params.get('action') !== 'dicter') return;
@@ -362,7 +362,7 @@ export function AtelierApp({ mid }: { mid: string }) {
       const cid = await createChapter(user.uid, mid, s.title, ws.chapters.length);
       await saveChapter(user.uid, mid, cid, { doc: s.doc, notes: s.notes, wordCount: s.wordCount });
       ws.setActiveId(cid);
-      toast.success(`« ${s.title} » est de retour`);
+      toast.success(`« ${s.title} » est de retour`);
     },
     [user.uid, mid, ws],
   );

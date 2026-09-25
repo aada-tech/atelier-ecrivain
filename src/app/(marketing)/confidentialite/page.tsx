@@ -90,7 +90,7 @@ export default function ConfidentialitePage() {
           requête sans y être conservée ; les conditions de votre compte Google s’appliquent alors.
         </li>
         <li>
-          La dictée « directe » utilise la reconnaissance vocale intégrée à votre navigateur : selon celui-ci, l’audio peut être traité par
+          La dictée « directe » utilise la reconnaissance vocale intégrée à votre navigateur : selon celui-ci, l’audio peut être traité par
           son éditeur (par exemple Google pour Chrome, Apple pour Safari). Vous pouvez choisir le moteur de dictée dans Compte › Écriture.
         </li>
       </ul>

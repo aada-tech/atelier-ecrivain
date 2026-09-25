@@ -12,7 +12,7 @@ export default function ConditionsPage() {
     <LegalPage title="Conditions d’utilisation" updated="25 septembre 2026">
       <h2>1. Objet</h2>
       <p>
-        Les présentes conditions encadrent l’utilisation de {SITE.fullName} (« l’Atelier »), un service en ligne d’écriture, de dictée, de
+        Les présentes conditions encadrent l’utilisation de {SITE.fullName} (« l’Atelier »), un service en ligne d’écriture, de dictée, de
         relecture et d’export de manuscrits.
       </p>
 

@@ -101,7 +101,9 @@ export async function createManuscript(uid: string, input: NewManuscriptInput): 
 export async function updateManuscript(
   uid: string,
   mid: string,
-  patch: Partial<Pick<Manuscript, 'title' | 'subtitle' | 'genre' | 'accent' | 'goal' | 'wordCount' | 'chapterCount'>>,
+  patch: Partial<Pick<Manuscript, 'title' | 'subtitle' | 'genre' | 'accent' | 'wordCount' | 'chapterCount'>> & {
+    goal?: Manuscript['goal'] | null;
+  },
 ) {
   await setDoc(refs.manuscript(uid, mid), { ...patch, updatedAt: serverTimestamp() }, { merge: true });
 }

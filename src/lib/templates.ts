@@ -74,7 +74,7 @@ export const TEMPLATES: Template[] = [
         doc: doc(
           'Ce chapitre est à vous : modifiez-le, raturez-le, supprimez-le. Tout est enregistré automatiquement, même hors ligne.',
           '## Dicter',
-          'Touchez le micro (ou **⌥ D**) et parlez naturellement. Dites « virgule », « point » ou « à la ligne » : la ponctuation suit. Vos mots s’inscrivent en direct là où se trouve le curseur.',
+          'Touchez le micro (ou **⌥ D**) et parlez naturellement. Dites « virgule », « point » ou « à la ligne » : la ponctuation suit. Vos mots s’inscrivent en direct là où se trouve le curseur.',
           '## Raturer',
           'Sélectionnez une phrase, puis *Raturer* : l’assistant propose des corrections ciblées, affichées en barré et en vert. Vous gardez toujours le dernier mot.',
           '## Vérifier',

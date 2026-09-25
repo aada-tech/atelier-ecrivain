@@ -33,3 +33,5 @@ npm-debug.log*
 # scratchpad des agents
 .agents/scratchpad/*
 !.agents/scratchpad/.gitkeep
+firestore-debug.log
+*-debug.log

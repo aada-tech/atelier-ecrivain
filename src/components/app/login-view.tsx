@@ -125,7 +125,7 @@ export function LoginView() {
           </Link>
           <blockquote className="max-w-lg">
             <p className="font-display text-5xl leading-[1.05]">
-              « Il faut écrire comme on parle, <em className="text-gradient-ember">et parler juste</em>. »
+              « Il faut écrire comme on parle, <em className="text-gradient-ember">et parler juste</em>. »
             </p>
             <footer className="mt-5 text-sm text-muted">Les mots viennent d’abord à voix haute. L’Atelier se charge de l’encre.</footer>
           </blockquote>

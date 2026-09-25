@@ -90,7 +90,7 @@ export function SuggestionsPanel({ suggestions, editor, onChange, onAnalyzeChapt
       <div className="min-h-0 flex-1 scrollbar-thin space-y-3 overflow-y-auto p-4">
         {visible.length === 0 && (
           <EmptyState icon={<Sparkles />} title="Aucune rature en attente" className="py-8">
-            Sélectionnez un passage puis « Raturer », ou analysez tout le chapitre. Vos repentirs dictés apparaîtront aussi ici.
+            Sélectionnez un passage puis « Raturer », ou analysez tout le chapitre. Vos repentirs dictés apparaîtront aussi ici.
           </EmptyState>
         )}
         {visible.map((s) => (

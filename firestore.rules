@@ -1,57 +1,137 @@
 rules_version = '2';
+
+// Règles Firestore — L'Atelier de l'Écrivain (schéma v2)
+//
+// Principes :
+// - Cloisonnement strict : un utilisateur ne lit et n'écrit que sous users/{son uid}.
+// - Liste blanche des champs et validation des types/tailles à chaque écriture.
+// - Aucune collection partagée entre utilisateurs (les anciens compteurs
+//   system/quotas, modifiables par tous, sont supprimés).
+// - Tout ce qui n'est pas explicitement autorisé est refusé.
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper function to check if request is authenticated & matches owner
-    function isOwner(userId) {
-      return request.auth != null && request.auth.uid == userId;
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
     }
 
-    // Helper function to prevent payload abuse and storage inflation
-    function isValidPayload() {
-      return request.resource == null || (
-        request.resource.data.keys().size() < 100 &&
-        (!('title' in request.resource.data) || (request.resource.data.title is string && request.resource.data.title.size() <= 2000)) &&
-        (!('content' in request.resource.data) || (request.resource.data.content is string && request.resource.data.content.size() <= 250000))
-      );
+    function data() {
+      return request.resource.data;
     }
 
-    // Shared system quotas for multi-user real-time tracking
-    match /system/quotas/{document=**} {
-      allow read, write: if request.auth != null && isValidPayload();
+    function hasOnly(fields) {
+      return data().keys().hasOnly(fields);
     }
 
-    // User data scoped strictly by UID
-    match /users/{userId} {
-      allow read: if isOwner(userId);
-      allow write: if isOwner(userId) && isValidPayload();
+    function optString(field, max) {
+      return !(field in data()) || data()[field] == null || (data()[field] is string && data()[field].size() <= max);
+    }
 
-      // Manuscripts subcollection
-      match /manuscripts/{manuscriptId} {
-        allow read: if isOwner(userId);
-        allow write: if isOwner(userId) && isValidPayload();
+    function optNumber(field, min, max) {
+      return !(field in data()) || (data()[field] is number && data()[field] >= min && data()[field] <= max);
+    }
 
-        // Chapters subcollection
-        match /chapters/{chapterId} {
-          allow read: if isOwner(userId);
-          allow write: if isOwner(userId) && isValidPayload();
-        }
+    function optList(field, max) {
+      return !(field in data()) || (data()[field] is list && data()[field].size() <= max);
+    }
 
-        // Meta subcollection (notes, settings)
-        match /meta/{metaId} {
-          allow read: if isOwner(userId);
-          allow write: if isOwner(userId) && isValidPayload();
-        }
+    function optMap(field) {
+      return !(field in data()) || data()[field] == null || data()[field] is map;
+    }
+
+    function optTimestamp(field) {
+      return !(field in data()) || data()[field] is timestamp;
+    }
+
+    // ── Profil ────────────────────────────────────────────────────────────
+    match /users/{uid}/profile/{docId} {
+      allow read, delete: if isOwner(uid) && docId == 'info';
+      allow create, update: if isOwner(uid) && docId == 'info'
+        && hasOnly(['penName', 'avatarColor', 'avatarUrl', 'showEmail', 'lastManuscriptId', 'lastActiveManuscriptId',
+                    'aiConsent', 'dailyGoal', 'dictationEngine', 'createdAt', 'updatedAt'])
+        && optString('penName', 80)
+        && optString('avatarColor', 16)
+        && optString('avatarUrl', 60000)
+        && optString('lastManuscriptId', 64)
+        && optString('lastActiveManuscriptId', 64)
+        && optNumber('dailyGoal', 1, 20000)
+        && (!('dictationEngine' in data()) || data().dictationEngine in ['auto', 'browser', 'cloud'])
+        && optMap('aiConsent')
+        && optTimestamp('updatedAt');
+    }
+
+    // ── Manuscrits ────────────────────────────────────────────────────────
+    match /users/{uid}/manuscripts/{mid} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && hasOnly(['title', 'subtitle', 'genre', 'accent', 'goal', 'wordCount', 'chapterCount', 'chaptersCount',
+                    'schema', 'createdAt', 'updatedAt'])
+        && data().title is string && data().title.size() <= 300
+        && optString('subtitle', 400)
+        && optString('genre', 60)
+        && optString('accent', 16)
+        && optMap('goal')
+        && optNumber('wordCount', 0, 5000000)
+        && optNumber('chapterCount', 0, 5000)
+        && optNumber('chaptersCount', 0, 5000)
+        && optTimestamp('updatedAt');
+
+      // Chapitres (les champs v1 « paragraphs / blocks / pendingReviews » restent
+      // tolérés jusqu'à la première sauvegarde migrée, qui les supprime).
+      match /chapters/{cid} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && hasOnly(['title', 'order', 'status', 'doc', 'notes', 'suggestions', 'wordCount', 'schema', 'updatedAt', 'updatedBy',
+                      'paragraphs', 'blocks', 'pendingReviews'])
+          && data().title is string && data().title.size() <= 300
+          && optNumber('order', 0, 100000)
+          && (!('status' in data()) || data().status in ['draft', 'revision', 'final'])
+          && optMap('doc')
+          && optList('notes', 1000)
+          && optList('suggestions', 500)
+          && optNumber('wordCount', 0, 1000000)
+          && optString('updatedBy', 64)
+          && optTimestamp('updatedAt');
       }
 
-      // Profile settings
-      match /profile/{profileId} {
-        allow read: if isOwner(userId);
-        allow write: if isOwner(userId) && isValidPayload();
+      // Métadonnées : réglages du livre, couverture, état de lecture, notes v1.
+      match /meta/{name} {
+        allow read, delete: if isOwner(uid);
+        allow create, update: if isOwner(uid) && name in ['book', 'cover', 'reader', 'notes']
+          && (name != 'cover' || (hasOnly(['dataUrl', 'updatedAt'])
+                                  && data().dataUrl is string
+                                  && data().dataUrl.size() <= 1000000
+                                  && data().dataUrl.matches('^data:image/(jpeg|png|webp);base64,.*')))
+          && (name != 'reader' || (hasOnly(['highlights', 'position', 'updatedAt']) && optList('highlights', 500)))
+          && (name != 'book' || hasOnly(['metadata', 'sections', 'cover', 'settings', 'updatedAt']));
+      }
+
+      // Versions (instantanés) : immuables une fois créées.
+      match /snapshots/{sid} {
+        allow read, delete: if isOwner(uid);
+        allow create: if isOwner(uid)
+          && hasOnly(['chapterId', 'title', 'label', 'doc', 'notes', 'wordCount', 'auto', 'createdAt'])
+          && data().chapterId is string && data().chapterId.size() <= 64
+          && optString('title', 300)
+          && optString('label', 120)
+          && optMap('doc')
+          && optList('notes', 1000)
+          && optNumber('wordCount', 0, 1000000);
+        allow update: if false;
       }
     }
 
-    // Deny all unauthenticated or out-of-scope access by default
+    // ── Statistiques d'écriture (mots par jour) ───────────────────────────
+    match /users/{uid}/stats/{day} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && day.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && hasOnly(['words', 'updatedAt'])
+        && data().words is number && data().words >= 0 && data().words <= 1000000;
+    }
+
+    // ── Refus par défaut ──────────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }

@@ -11,5 +11,9 @@ export default defineConfig([
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
   },
+  {
+    files: ['scripts/**'],
+    rules: { 'no-console': 'off' },
+  },
   globalIgnores(['.next/**', 'out/**', 'build/**', 'coverage/**', 'test-results/**', 'playwright-report/**', 'next-env.d.ts']),
 ]);

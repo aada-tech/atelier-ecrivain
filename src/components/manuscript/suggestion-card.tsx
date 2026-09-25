@@ -70,7 +70,7 @@ export function SuggestionCard({
             ),
           )
         ) : (
-          <span className="text-muted italic">« {s.original} »</span>
+          <span className="text-muted italic">« {s.original} »</span>
         )}
       </p>
 

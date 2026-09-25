@@ -1,3 +1,5 @@
+import 'server-only';
+
 /**
  * Détection du type audio par signature binaire : Safari iOS annonce souvent
  * un type vide ou « video/mp4 » pour de l'audio pur.

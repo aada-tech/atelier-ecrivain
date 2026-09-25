@@ -240,6 +240,10 @@ export function AccountView() {
             className="mt-5"
             onSubmit={(e) => {
               e.preventDefault();
+              if (key.trim() && !/^[A-Za-z0-9_\-]{20,120}$/.test(key.trim())) {
+                toast.error('Cette clé ne ressemble pas à une clé Gemini (AIza…).');
+                return;
+              }
               personalKey.set(key);
               toast.success(key ? 'Clé enregistrée sur cet appareil' : 'Clé retirée');
             }}

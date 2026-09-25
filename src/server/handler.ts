@@ -48,8 +48,10 @@ export async function guard(req: Request, cost = 1): Promise<AiContext | NextRes
   }
 
   // Clé personnelle (optionnelle) : utilisée pour cette seule requête, jamais stockée ni journalisée.
-  const userKey = req.headers.get('x-gemini-key')?.trim();
-  const apiKey = userKey && KEY_RE.test(userKey) ? userKey : (process.env.GEMINI_API_KEY ?? '');
+  const rawKey = req.headers.get('x-gemini-key')?.trim();
+  if (rawKey && !KEY_RE.test(rawKey)) return aiError('bad_request', 'Clé Gemini personnelle invalide.', 400);
+  const userKey = rawKey || null;
+  const apiKey = userKey ?? process.env.GEMINI_API_KEY ?? '';
   if (!apiKey) {
     return aiError('no_key', 'Aucune clé Gemini n’est configurée sur le serveur. Ajoutez votre propre clé dans Compte › IA.', 503);
   }

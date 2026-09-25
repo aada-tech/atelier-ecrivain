@@ -22,7 +22,7 @@ const STEPS = [
     icon: Mic,
     tag: 'Dicter',
     title: 'Parlez comme vous pensez.',
-    text: 'Vos mots s’inscrivent en direct, là où se trouve le curseur. Dites « virgule », « point », « à la ligne » : la ponctuation suit. Sur ordinateur, l’IA affine ensuite la transcription et repère vos repentirs.',
+    text: 'Vos mots s’inscrivent en direct, là où se trouve le curseur. Dites « virgule », « point », « à la ligne » : la ponctuation suit. Sur ordinateur, l’IA affine ensuite la transcription et repère vos repentirs.',
     Scene: DictationScene,
   },
   {

@@ -43,6 +43,7 @@ export function useWorkspace(uid: string, mid: string) {
   const chaptersRef = useRef<Chapter[]>([]);
   const timers = useRef(new Map<string, { t: ReturnType<typeof setTimeout>; first: number }>());
   const pending = useRef(0);
+  const sent = useRef(new Map<string, Draft>());
   const savedWords = useRef(new Map<string, number>());
   const counterTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const activeRef = useRef<string | null>(null);
@@ -140,7 +141,9 @@ export function useWorkspace(uid: string, mid: string) {
       if (timer) clearTimeout(timer.t);
       timers.current.delete(cid);
       const draft = draftsRef.current[cid];
-      if (!draft) return;
+      // Rien à faire si ce brouillon exact a déjà été envoyé (il reste affiché quelques instants).
+      if (!draft || sent.current.get(cid) === draft) return;
+      sent.current.set(cid, draft);
       const patch: Parameters<typeof saveChapter>[3] = { ...draft };
       if (draft.doc) {
         const words = docWordCount(draft.doc);
@@ -149,10 +152,15 @@ export function useWorkspace(uid: string, mid: string) {
         if (words > before) void recordWords(uid, words - before).catch(() => {});
         savedWords.current.set(cid, words);
       }
-      // Le brouillon est retiré : Firestore applique l'écriture localement de façon synchrone.
-      const rest = { ...draftsRef.current };
-      delete rest[cid];
-      commitDrafts(rest);
+      // Le brouillon reste affiché le temps que l'instantané Firestore reflète l'écriture :
+      // le retirer aussitôt ferait brièvement réapparaître l'ancienne version (et
+      // remonterait les champs en cours de saisie). Retiré seulement s'il n'a pas changé.
+      setTimeout(() => {
+        if (draftsRef.current[cid] !== draft) return;
+        const rest = { ...draftsRef.current };
+        delete rest[cid];
+        commitDrafts(rest);
+      }, 1_500);
 
       pending.current++;
       setStatus(navigator.onLine ? 'saving' : 'offline');

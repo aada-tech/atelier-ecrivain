@@ -200,7 +200,7 @@ export function ChapterSidebar({
         {confirm && (
           <DialogContent
             title="Supprimer ce chapitre ?"
-            description={`« ${confirm.title} » sera retiré du manuscrit. Une copie est conservée dans les versions.`}
+            description={`« ${confirm.title} » sera retiré du manuscrit. Une copie est conservée dans les versions.`}
           >
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setConfirm(null)}>

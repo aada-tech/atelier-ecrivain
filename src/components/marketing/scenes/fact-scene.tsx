@@ -105,7 +105,7 @@ export function FactScene({ variant = 'desktop', playing, className, onLoop }: S
             style={{ ['--prose-size' as string]: phone ? '15px' : '15.5px', ['--prose-leading' as string]: '1.75' }}
           >
             <p>
-              Quand Gustave Eiffel présenta son projet, on le traita de « lampadaire tragique ». La tour,{' '}
+              Quand Gustave Eiffel présenta son projet, on le traita de « lampadaire tragique ». La tour,{' '}
               <span data-claim="f1" style={underline('var(--c-danger)')}>
                 inaugurée en{' '}
                 <span data-year-old className="inline-block overflow-hidden align-bottom">

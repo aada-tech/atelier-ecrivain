@@ -274,7 +274,7 @@ export function LibraryView() {
               onSubmit={async (e) => {
                 e.preventDefault();
                 const v = Number(new FormData(e.currentTarget).get('target'));
-                await updateManuscript(user.uid, goalFor.id, { goal: v > 0 ? { targetWords: Math.min(2_000_000, v) } : undefined });
+                await updateManuscript(user.uid, goalFor.id, { goal: v > 0 ? { targetWords: Math.min(2_000_000, v) } : null });
                 setGoalFor(null);
                 toast.success('Objectif enregistré');
               }}
@@ -318,7 +318,7 @@ export function LibraryView() {
             description="Tous ses chapitres, notes et versions seront définitivement effacés."
           >
             <p className="mb-4 rounded-xl bg-danger-soft p-3 text-sm text-danger">
-              « {deleting.title} » — {formatNumber(deleting.wordCount)} mots. Pensez à l’exporter avant.
+              « {deleting.title} » — {formatNumber(deleting.wordCount)} mots. Pensez à l’exporter avant.
             </p>
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setDeleting(null)}>
