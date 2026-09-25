@@ -23,7 +23,7 @@ Ce registre consigne les choix structurants d'architecture, les conventions tech
   3. Interdiction absolue du busy-polling : attente d'événements réactifs, pas de requêtes de statut en boucle courte.
 - **Raison** : Maîtrise prédictive des coûts en tokens et préservation de la cohérence logique du codebase.
 
-### 2026-09-11 | Architecture Frontend & Déploiement Statique
+### 2026-09-11 | Architecture Frontend & Déploiement Statique — *remplacée le 2026-09-25 (voir « Architecture hybride »)*
 - **Problème** : Déploiement statique Next.js App Router couplé à Firebase sans serveur Node dédié (`output: 'export'`).
 - **Décision tranchée** :
   1. Toute la logique d'état et d'accès aux données s'exécute côté client (React hooks, contextes, Firebase Web SDK).
@@ -65,4 +65,40 @@ Ce registre consigne les choix structurants d'architecture, les conventions tech
   4. **Exclusivité Audio Session** : Séparation stricte des pipelines. Si `LiveSpeechRecognizer.isSupported()` est vrai, il prend le contrôle exclusif du micro (aucun `getUserMedia` concurrent). À l'arrêt, le texte transcrit est injecté immédiatement dans le paragraphe, puis magnifié en tâche de fond par Gemini sans blocage UI.
   5. **Détection Secure Context** : Vérification de `window.isSecureContext` et message explicite si l'accès se fait via HTTP LAN (`http://192.168.x.x`) qui désactive le Web Speech API sur les navigateurs mobiles.
 - **Raison** : Rétablir une dictée vocale instantanée, fidèle et ergonomique pour l'écriture nomade sur smartphone.
+
+### 2026-09-25 | Architecture hybride : proxy IA côté serveur
+- **Problème** : En export statique, la clé Gemini devait être exposée au navigateur et les quotas étaient tenus dans une collection Firestore partagée (`system/quotas`) modifiable par tout utilisateur connecté.
+- **Décision tranchée** :
+  1. Abandon de `output: 'export'` : Next.js hybride sur Vercel. Pages statiques, routes `/api/ai/*` en runtime Node.js.
+  2. La clé Gemini ne vit que côté serveur (`GEMINI_API_KEY`). Chaque route vérifie le jeton Firebase (JWKS securetoken, RS256, émetteur/audience), l'origine, applique un débit par uid, valide entrées et sorties avec zod.
+  3. Suppression de `system/quotas` ; règles Firestore en refus par défaut avec liste blanche de champs.
+- **Raison** : Seule façon de ne pas distribuer la clé IA et de rendre les quotas inviolables, sans compte de service. Contre-exemple écarté : Cloud Functions (déploiement séparé, démarrages à froid, second pipeline).
+
+### 2026-09-25 | Modèle de document v2 (ProseMirror restreint)
+- **Problème** : La v1 stockait du HTML de `contentEditable` non assaini (risque XSS), des appels de note en exposants Unicode et un bloc par paragraphe, ce qui rendait l'édition fragile.
+- **Décision tranchée** :
+  1. Un chapitre = un document JSON TipTap/ProseMirror au schéma restreint (paragraphe, intertitre 2–3, citation, séparateur, gras/italique, saut de ligne, `noteRef`), normalisé par `normalizeDoc` à chaque lecture et import.
+  2. Migration v1 → v2 à la lecture (`chapterFromFirestore`), sans DOM ; la première sauvegarde supprime les champs v1.
+  3. Rendus neutres (`docToRenderBlocks`) partagés par la liseuse, le PDF, l'EPUB et le Markdown.
+- **Raison** : Aucun HTML ne transite ; les notes sont des nœuds numérotés automatiquement ; un seul modèle pour tous les rendus.
+
+### 2026-09-25 | Synchronisation par chapitre et hors ligne
+- **Problème** : Sauvegarde du manuscrit entier, écrasements entre appareils, perte de saisie.
+- **Décision tranchée** : Cache Firestore persistant multi-onglets ; brouillon local par chapitre avec sauvegarde différée (800 ms, 5 s max) ; le brouillon envoyé reste affiché jusqu'à l'accusé de Firestore ; en cas de modification distante concurrente, la version locale gagne et la distante est archivée en version.
+- **Raison** : Aucun texte perdu, aucun clignotement, écriture possible hors ligne (métro, avion).
+
+### 2026-09-25 | Dictée à trois moteurs
+- **Problème** : Web Speech API inégale selon les navigateurs, transcription cloud plus fidèle mais différée ; conflits de micro sur mobile.
+- **Décision tranchée** : Moteurs « navigateur », « cloud » et « hybride » (défaut sur ordinateur : texte en direct puis version Gemini relue). Sur mobile, un seul pipeline tient le micro. Commandes vocales et typographie française appliquées localement (`applyVoiceCommands`).
+- **Raison** : Retour immédiat à l'écran et qualité finale, sans double capture du micro sur iOS/Android. Les décisions mobiles du 2026-09-11 et 2026-09-13 restent valables dans leur principe (exclusivité audio, pas de timeslice sur MP4, détection MIME binaire).
+
+### 2026-09-25 | Landing et publicités à partir des composants réels
+- **Problème** : Illustrer l'application (landing, TikTok/Reels) sans maquettes qui divergent du produit.
+- **Décision tranchée** : Les scènes animées (GSAP) montent les vrais composants (dock de dictée, carte de suggestion, liseuse…) dans une coque d'application à requêtes de conteneur ; les mêmes scènes alimentent le studio `/reels` (9:16) et `scripts/record-reels.mjs` (vidéos 1080×1920).
+- **Raison** : Les visuels promotionnels suivent automatiquement l'évolution de l'interface ; une seule source d'animation.
+
+### 2026-09-25 | RGPD intégré au produit
+- **Problème** : Pas d'export ni de suppression de données, pas de consentement à l'envoi de textes à l'IA, pages légales absentes.
+- **Décision tranchée** : Consentement IA versionné et révocable ; export ZIP complet (JSON + Markdown) ; suppression de toutes les données puis du compte ; pages confidentialité, mentions légales, conditions ; purge du cache local à la déconnexion ; aucun traceur tiers. Check-list exploitant dans `docs/RGPD.md`.
+- **Raison** : Droits d'accès, de portabilité et d'effacement exerçables sans intervention manuelle.
 

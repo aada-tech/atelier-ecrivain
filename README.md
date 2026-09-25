@@ -1,35 +1,65 @@
-# L'Atelier de l'Écrivain
+# L’Atelier de l’Écrivain
 
-Bienvenue sur le dépôt de **L'Atelier de l'Écrivain** !
+**Parlez. Votre livre s’écrit.** L’atelier d’écriture qui transforme la voix en manuscrit : dictée en temps réel, ratures suggérées
+par l’IA (que l’auteur accepte ou refuse), vérification des faits sourcée, notes de bas de page, versions, liseuse et export PDF/EPUB
+prêt à imprimer.
 
-Ce projet est une application web (liseuse et éditeur) permettant de lire, structurer et travailler sur des œuvres littéraires.
+👉 [atelier-ecrivain.vercel.app](https://atelier-ecrivain.vercel.app)
 
-## 🌍 Accéder à l'application web
+## Ce que fait l’application
 
-L'application est déployée et accessible en ligne :
-👉 **[Lien vers l'application web (Vercel)](https://atelier-ecrivain.vercel.app)** 
+| Espace          | Route           | Fonctionnalités                                                                                                                         |
+| --------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Landing         | `/`             | Présentation animée (GSAP) dont les scènes réutilisent les vrais composants de l’application                                             |
+| Connexion       | `/connexion`    | Google, lien magique par e-mail, essai sans compte (session anonyme convertible sans perte)                                               |
+| Bibliothèque    | `/bibliotheque` | Manuscrits, modèles (roman, essai, mémoires, guide), import `.txt`/`.md`, objectifs et série de jours d’écriture                         |
+| Atelier         | `/atelier?m=…`  | Éditeur TipTap, dictée (navigateur, cloud ou hybride), commandes vocales, ratures IA, faits, recherche, notes, versions, palette ⌘K       |
+| Liseuse         | `/liseuse?m=…`  | Lecture paginée, thèmes jour/sépia/nuit, surlignages, lecture à voix haute, reprise de la position                                      |
+| Compte          | `/compte`       | Profil, consentement IA, clé Gemini personnelle facultative, export de toutes les données (RGPD), suppression du compte                    |
+| Studio de reels | `/reels`        | Vidéos 9:16 (TikTok, Reels, Shorts) générées à partir des scènes réelles — voir [docs/PUBLICITES.md](docs/PUBLICITES.md)                  |
 
-*(Le domaine a été mis à jour vers atelier-ecrivain)*
+## Démarrer
 
----
+Prérequis : Node.js ≥ 22.12 (et Java 21 pour les émulateurs Firebase).
 
-## 🛠 Déploiement et Développement Local
-
-Ce projet est construit avec [Next.js](https://nextjs.org/) et stylisé avec Tailwind CSS.
-
-### Lancer le projet en local
-
-1. Clonez le dépôt :
-```bash
-git clone https://github.com/fnnktkygl-code/atelier-ecrivain.git
-```
-2. Installez les dépendances :
 ```bash
 npm install
-```
-3. Lancez le serveur de développement :
-```bash
-npm run dev
+cp .env.example .env.local   # renseigner la configuration Firebase web + GEMINI_API_KEY
+npm run dev                  # http://localhost:3000
 ```
 
-Ouvrez [http://localhost:3000](http://localhost:3000) dans votre navigateur pour voir le résultat.
+### Sans projet Firebase : émulateurs locaux
+
+```bash
+npm run emulators            # Auth (9099) + Firestore (8080), projet demo-atelier
+npm run dev:local            # l’application se connecte aux émulateurs
+```
+
+L’essai sans compte fonctionne immédiatement ; les fonctions IA demandent une clé Gemini (serveur ou personnelle).
+
+## Scripts
+
+| Commande                      | Rôle                                                                     |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| `npm run check`               | lint + types + tests unitaires + build                                   |
+| `npm test`                    | tests unitaires (Vitest)                                                 |
+| `npm run test:rules`          | règles Firestore contre l’émulateur                                      |
+| `npm run test:e2e`            | parcours Playwright du site public, des en-têtes de sécurité et de l’API |
+| `npm run test:e2e:emulators`  | parcours complet de l’application contre les émulateurs                  |
+| `npm run reels:record`        | enregistre les reels en 1080×1920                                        |
+| `npm run format`              | Prettier (+ tri des classes Tailwind)                                    |
+
+## Déploiement (Vercel)
+
+1. Importer le dépôt dans Vercel (framework Next.js détecté).
+2. Variables d’environnement : celles de `.env.example`. `GEMINI_API_KEY` reste **sans** préfixe `NEXT_PUBLIC_`.
+3. Firebase : activer les fournisseurs Google, Lien e-mail et Anonyme ; ajouter le domaine Vercel aux domaines autorisés ;
+   déployer les règles : `npx firebase-tools deploy --only firestore:rules,storage`.
+4. Compléter les informations légales dans `src/lib/site.ts` (voir [docs/RGPD.md](docs/RGPD.md)).
+
+## Documentation
+
+- [Architecture](docs/ARCHITECTURE.md) — pile technique, modèle de données, synchronisation, IA
+- [Sécurité](docs/SECURITE.md) — menaces traitées et mesures
+- [RGPD](docs/RGPD.md) — traitements, droits, check-list de l’exploitant
+- [Publicités](docs/PUBLICITES.md) — studio de reels et captation vidéo
